@@ -1,0 +1,118 @@
+#
+# Makefile for CS244B mazewar assignment
+#
+# Inspired by:
+#   Ben Werther <benw@cs.stanford.edu> Feb 1999
+# Modified by:
+#   Constantine Sapuntzakis <csapuntz@cs.stanford.edu> Apr 1999
+####################################################################
+
+############################
+#
+# Global variables
+#
+CC         = gcc
+CXX        = g++
+DEFINES    =
+
+INC_DIRS   = -I. -I/usr/openwin/include
+#FLAGS      = -c -g -Wall -Wno-implicit-int $(DEFINES) $(INC_DIRS)
+FLAGS      = -c -g -Wall $(DEFINES) $(INC_DIRS)
+
+#-- Solaris
+AR         = /usr/ccs/bin/ar
+RANLIB     = /usr/ccs/bin/ranlib
+LIBRARIES  = -lXt -lX11 -lsocket -lnsl
+LIB_DIRS   = -L.
+
+#-- Linux
+#AR         = ar
+#RANLIB     = ranlib
+#LIBRARIES   = -lXt -lX11
+#LIB_DIRS    = -L. -L/usr/X11R6/lib/ 
+
+# dummy target points to the real target
+dummytarget: mwar
+
+############################
+#
+# Debugging flags
+#
+
+# To debug : comment out debug flags here:
+
+DEBUGS = 
+
+CFLAGS     = $(FLAGS) $(DEBUGS) 
+CXXFLAGS   = $(FLAGS) $(DEBUGS) 
+
+############################
+#
+# Applications
+#
+
+APP_OBJS   = toplevel.o display.o init.o winsys.o
+APP = mazewar
+
+ifdef PURIFY
+PURELINK=purify --cachedir=./
+else
+PURELINK=
+endif
+
+$(APP): $(APP_OBJS)
+	$(PURELINK) $(CC) -o $(APP) $(APP_OBJS) $(LIB_DIRS) $(LIBRARIES)
+
+############################
+#
+# Makefile stuff
+# (you probably won't need to change any of this)
+#
+.PHONY: dummytarget 
+
+mwar: deps
+	@echo "Building Mazewar..."
+	@$(MAKE) INCLUDE_DEPS=1 mazewar
+
+clean:
+	@echo "Cleaning Mazewar directory..."
+	rm -f *.o *.d *~ mazewar
+
+# Dependency creation 
+deps: ${APP_OBJS:.o=.d}
+	@echo "Updating Mazewar dependencies..."
+
+# Include the dependencies, once we've built them
+ifdef INCLUDE_DEPS
+include ${APP_OBJS:.o=.d}
+endif
+
+ifdef PURIFY
+%.o: %.c
+	purify $(CC) $(CFLAGS) $<
+
+%.o: %.cc
+	purify $(CXX) $(CXXFLAGS) $<
+endif
+
+#################################################################
+#
+# Dependency stuff
+#
+%.cc: %.cpp
+	cp $< $@
+
+%.d: %.cc
+	@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
+                    | sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
+                    [ -s $@ ] || rm -f $@'
+
+%.d: %.cpp
+	@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
+                    | sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
+                    [ -s $@ ] || rm -f $@'
+
+%.d: %.c
+	@$(SHELL) -ec '$(CC) -MM $(CFLAGS) $< \
+                    | sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
+                    [ -s $@ ] || rm -f $@'
