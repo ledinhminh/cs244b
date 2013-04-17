@@ -1,6 +1,6 @@
 /*
  *   FILE: toplevel.c
- * AUTHOR: name (email)
+ * AUTHOR: Wei Shi (weishi@stanford.edu)
  *   DATE: March 31 23:59:59 PST 2013
  *  DESCR:
  */
@@ -310,8 +310,18 @@ void peekStop()
 
 void shoot()
 {
+    if(M->hasMissile()){
+        return;
+    }
 	M->scoreIs( M->score().value()-1 );
 	UpdateScoreCard(M->myRatId().value());
+    
+    M->hasMissileIs(true);
+    M->xMissileIs(MY_X_LOC);
+    M->yMissileIs(MY_Y_LOC);
+    M->dirMissileIs(MY_DIR);
+    
+
 }
 
 /* ----------------------------------------------------------------------- */
@@ -416,7 +426,54 @@ void ratStates()
 /* This is just for the sample version, rewrite your own */
 void manageMissiles()
 {
-  /* Leave this up to you. */
+	register int	oldtx = MY_X_MIS;
+	register int	oldty = MY_Y_MIS;
+	register int	tx = oldtx;
+	register int	ty = oldty;
+    if(!M->hasMissile()){
+        return;
+    }
+    
+    /* TODO: check for hits */
+	switch(MY_DIR_MIS) {
+	case NORTH:	
+        if (!M->maze_[tx+1][ty]){
+            tx++;
+        }else{
+            M->hasMissileIs(false);
+        }
+        break;
+	case SOUTH:	
+        if (!M->maze_[tx-1][ty]){
+            tx--;
+        }else{
+            M->hasMissileIs(false);
+        }
+        break;
+	case EAST:
+        if (!M->maze_[tx][ty+1]){
+            ty++;
+        }else{
+            M->hasMissileIs(false);
+        } break;
+	case WEST:
+        if (!M->maze_[tx][ty-1])	{
+            ty--;
+        }else{
+            M->hasMissileIs(false);
+        } break;
+	default:
+		MWError("bad direction in Managing missile");
+	}
+	if (M->hasMissile()) {
+		M->xMissileIs(Loc(tx));
+		M->yMissileIs(Loc(ty));
+		showMissile(MY_X_MIS, MY_Y_MIS, MY_DIR_MIS, Loc(oldtx), Loc(oldty), true);
+	}else{
+        clearSquare(Loc(oldtx), Loc(oldty));
+    }
+    updateView = TRUE;
+
 }
 
 /* ----------------------------------------------------------------------- */
