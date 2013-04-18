@@ -48,7 +48,9 @@ SOFTWARE.
 
 #include "Nominal.h"
 #include "Exception.h"
+#include "packet.h"
 #include <string>
+#include <iostream>
 
 /* fundamental constants */
 
@@ -64,7 +66,7 @@ SOFTWARE.
 /* Feel free to modify.  This is the simplest version we came up with */
 
 /* A unique MAZEPORT will be assigned to your team by the TA */
-#define	MAZEPORT	5000
+#define	MAZEPORT	5023
 /* The multicast group for Mazewar is 224.1.1.1 */
 #define MAZEGROUP       0xe0010101
 #define	MAZESERVICE	"mazewar244B"
@@ -142,9 +144,9 @@ public:
     }
 };
 
-class RatId : public Ordinal<RatId, unsigned short> {
+class RatId : public Ordinal<RatId, uint32_t> {
 public:
-    RatId(unsigned short num) : Ordinal<RatId, unsigned short>(num) {
+    RatId(uint32_t num) : Ordinal<RatId, uint32_t>(num) {
     }
 };
 
@@ -368,17 +370,12 @@ extern MazewarInstance::Ptr M;
 #define	EVENT_TIMEOUT	18		/* nothing happened! */
 
 extern unsigned short	ratBits[];
-/* replace this with appropriate definition of your own */
-typedef	struct {
-    unsigned char type;
-    u_long	body[256];
-}					MW244BPacket;
 
 typedef	struct {
-    short		eventType;
-    MW244BPacket	*eventDetail;	/* for incoming data */
-    Sockaddr	eventSource;
-}					MWEvent;
+    short		                eventType;
+    MW244BPacket   *eventDetail;	/* for incoming data */
+    Sockaddr	                eventSource;
+}MWEvent;
 
 void		*malloc();
 Sockaddr	*resolveHost();
@@ -434,14 +431,18 @@ void NewPosition(MazewarInstance::Ptr M);
 void MWError(char *);
 Score GetRatScore(RatIndexType);
 char  *GetRatName(RatIndexType);
-void ConvertIncoming(MW244BPacket *);
-void ConvertOutgoing(MW244BPacket *);
 void ratState(void);
 void manageMissiles(void);
 void DoViewUpdate(void);
+
 void sendPacketToPlayer(RatId);
+void sendPacket();
+void sendHeartbeat();
 void processPacket(MWEvent *);
 void netInit(void);
+
+void ConvertIncoming(MW244BPacket *);
+void ConvertOutgoing(MW244BPacket *);
 
 
 
@@ -464,5 +465,23 @@ void NotifyPlayer(void);
 void DrawString(const char *, uint32_t, uint32_t, uint32_t);
 void StopWindow(void);
 
+
+class packetFactory{
+    public:
+    static mazePacket *createPacket(uint8_t type) {
+        switch (type){
+            case TYPE_HEARTBEAT:
+               return new heartbeat;
+            case TYPE_NAME_REQUEST:
+              return new nameRequest; 
+            case TYPE_NAME_RESPONSE:
+              return new nameResponse;
+            default:
+              MWError("bad packet type for factory"); 
+        }
+        return NULL;
+    }
+    
+};
 
 #endif
