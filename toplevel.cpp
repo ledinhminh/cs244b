@@ -21,6 +21,8 @@ static Sockaddr         groupAddr;
 static uint32_t seqNum = 0;
 static uint8_t seqMis = 0;
 
+static enum Phase phase = Join;
+
 int main(int argc, char *argv[])
 {
     Loc x(1);
@@ -44,10 +46,6 @@ int main(int argc, char *argv[])
 
     NewPosition(M);
 
-    /* So you can see what a Rat is supposed to look like, we create
-    one rat in the single player mode Mazewar.
-    It doesn't move, you can't shoot it, you can just walk around it */
-
     play();
 
     return 0;
@@ -64,8 +62,26 @@ play(void)
 
     event.eventDetail = &incoming;
 
+    struct timeval startup;
+    gettimeofday(&startup, NULL);
     while (TRUE) {
         NextEvent(&event, M->theSocket());
+        /* Only listen for heartbeat during Phase.Join */
+        if(phase == Join) {
+            cout << "join" << endl;
+            if(event.eventType == EVENT_NETWORK) {
+                processPacket(&event);
+            }
+            checkJoinComplete(startup);
+            continue;
+        }
+        /* Init after Join completes */
+        if(phase == Init) {
+            cout << "init" << endl;
+            M->myRatIdIs(generateId());
+            phase = Play;
+        }
+        /* Process all inputs during Phase.Play*/
         if (!M->peeking())
             switch(event.eventType) {
             case EVENT_A:
@@ -410,22 +426,24 @@ void MWError(char *s)
 /* This is just for the sample version, rewrite your own */
 Score GetRatScore(RatIndexType ratId)
 {
-    if (ratId.value() == 	M->myRatId().value()) {
+    if (ratId.value() == 	MY_RAT_INDEX) {
         return(M->score());
     } else {
-        return (0);
+        Rat r = M->rat(ratId);
+        return r.score;
     }
 }
 
 /* ----------------------------------------------------------------------- */
 
 /* This is just for the sample version, rewrite your own */
-char *GetRatName(RatIndexType ratId)
+const char *GetRatName(RatIndexType ratId)
 {
-    if (ratId.value() ==	M->myRatId().value()) {
+    if (ratId.value() ==	MY_RAT_INDEX) {
         return(M->myName_);
     } else {
-        return ("Dummy");
+        Rat r = M->rat(ratId);
+        return r.name.c_str();
     }
 }
 
@@ -559,7 +577,7 @@ void sendPacket(mazePacket *pack)
 {
     uint8_t buf[64];
     memset(buf, 0, sizeof(64));
-    pack->serialize(buf,sizeof(buf));
+    pack->serialize(buf, sizeof(buf));
     for(int j = 0; j < pack->size(); j++) {
         printf("%02X", buf[j]);
     }
@@ -572,11 +590,10 @@ void sendPacket(mazePacket *pack)
 void sendHeartbeat()
 {
     heartbeat *hb = (heartbeat *)packetFactory::createPacket(TYPE_HEARTBEAT);
-    hb->id=M->myRatId().value();
+    hb->id = M->myRatId().value();
     hb->seqNum = seqNum++;
     hb->xLoc = MY_X_LOC;
     hb->yLoc = MY_Y_LOC;
-    printf("x,y=(%d,%d)\n", hb->xLoc, hb->yLoc);
     hb->dir = MY_DIR;
     hb->score = M->score().value();
     hb->seqMis = seqMis;
@@ -593,7 +610,7 @@ void sendHeartbeat()
 
 /* ----------------------------------------------------------------------- */
 
-/* Sample of processPacket. */
+/* Packet processing routines */
 
 void processPacket (MWEvent *eventPacket)
 {
@@ -602,9 +619,11 @@ void processPacket (MWEvent *eventPacket)
     cout << pack->type << endl;
     switch (pack->type) {
     case TYPE_HEARTBEAT: {
-        heartbeat *hb = reinterpret_cast<heartbeat *>(pack);
+        heartbeat hb;
+        hb.deserialize(reinterpret_cast<uint8_t *>(pack), sizeof(MW244BPacket));
         std::cout << "heartbeat" << endl;
-        std::cout << hb->xLoc << "," << hb->yLoc << endl;
+        printf("%d,%d,%d\n", hb.xLoc, hb.yLoc, hb.score);
+        processHeartbeat(&hb);
     }
     break;
     case TYPE_NAME_REQUEST: {
@@ -623,6 +642,62 @@ void processPacket (MWEvent *eventPacket)
 
 }
 
+void processHeartbeat(heartbeat *hb)
+{
+    if(hb->id == M->myRatId().value()) {
+        /* from Me */
+    } else {
+        bool existing = false;
+        int index;
+        Rat r;
+        for(index = 1; index < MAX_RATS; index++) {
+            r = M->rat(index);
+            if(r.playing && r.id == hb->id) {
+                existing = true;
+                break;
+            }
+            if(!r.playing){
+                break;
+            }
+        }
+        if(existing) {
+            /* from existing player */
+            if(r.seqNum<hb->seqNum){
+                r.seqNum=hb->seqNum;
+                r.x=Loc(hb->xLoc);
+                r.y=Loc(hb->yLoc);
+                r.dir=Direction(hb->dir);
+                r.score=Score(hb->score);
+                if((r.hasMissile=hb->hasMissile())==true){
+                    r.xMis=Loc(hb->xMis);
+                    r.yMis=Loc(hb->yMis);
+                }
+                M->ratIs(r,index);
+            }
+        } else {
+            /* from new player */
+            if(index==MAX_RATS){
+                cout << "Reached max player. New player ignored." << endl;
+            }else{
+                Rat nr;
+                nr.playing=true;
+                nr.id=hb->id;
+                r.seqNum=hb->seqNum;
+                r.x=Loc(hb->xLoc);
+                r.y=Loc(hb->yLoc);
+                r.dir=Direction(hb->dir);
+                r.score=Score(hb->score);
+                if((r.hasMissile=hb->hasMissile())==true){
+                    r.xMis=Loc(hb->xMis);
+                    r.yMis=Loc(hb->yMis);
+                }
+                M->ratIs(nr,index);
+                /* TODO: Get name new player name */
+            }
+        }
+    }
+
+}
 /* ----------------------------------------------------------------------- */
 
 /* This will presumably be modified by you.
@@ -713,3 +788,36 @@ netInit()
 
 
 /* ----------------------------------------------------------------------- */
+
+void checkJoinComplete(timeval startup)
+{
+    struct timeval cur;
+    gettimeofday(&cur, NULL);
+    if (timediff(cur, startup) > JOIN_TIMEOUT) {
+        phase = Init;
+    }
+}
+
+/* generate unique ID given existing rats */
+uint32_t generateId()
+{
+    uint32_t id = 0;
+    bool conflict;
+    do {
+        conflict = false;
+        id = (uint32_t)rand();
+        for(int i = 1; i < MAX_RATS; i++) {
+            Rat r = M->rat(i);
+            if(r.playing && r.id.value() == id) {
+                conflict = true;
+                break;
+            }
+        }
+    } while(conflict);
+    return id;
+}
+
+long timediff(timeval t1, timeval t2)
+{
+    return (t1.tv_sec - t2.tv_sec) * 1000 + (t1.tv_usec - t2.tv_usec) / 1000;
+}

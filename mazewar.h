@@ -51,6 +51,8 @@ SOFTWARE.
 #include "packet.h"
 #include <string>
 #include <iostream>
+#include <time.h>
+#include <stdlib.h>
 
 /* fundamental constants */
 
@@ -58,6 +60,9 @@ SOFTWARE.
 #define	TRUE		1
 #define	FALSE		0
 #endif	/* TRUE */
+
+/* Timeouts(ms) */
+#define JOIN_TIMEOUT 2000
 
 /* You can modify this if you want to */
 #define	MAX_RATS	8
@@ -110,6 +115,7 @@ typedef	struct {
 }	BitCell;
 typedef	char						RatName[NAMESIZE];
 
+enum Phase{Join, Init, Play};
 
 class Direction : public Ordinal<Direction, short> {
 public:
@@ -169,10 +175,18 @@ public:
 class Rat {
 
 public:
-    Rat() :  playing(0), x(1), y(1), dir(NORTH) {};
+    Rat() :  playing(0), x(1), y(1), dir(NORTH),
+    xMis(0), yMis(0), hasMissile(false), 
+    score(0), name("other"), id(0), seqNum(0) {};
     bool playing;
     Loc	x, y;
     Direction dir;
+    Loc xMis, yMis;
+    bool hasMissile;
+    Score score;
+    string name;
+    RatId id;
+    uint32_t seqNum;
 };
 
 typedef	RatAppearance			RatApp_type [MAX_RATS];
@@ -430,15 +444,23 @@ void quit(int);
 void NewPosition(MazewarInstance::Ptr M);
 void MWError(char *);
 Score GetRatScore(RatIndexType);
-char  *GetRatName(RatIndexType);
+const char  *GetRatName(RatIndexType);
 void ratState(void);
 void manageMissiles(void);
 void DoViewUpdate(void);
 
+void checkJoinComplete(timeval);
+uint32_t generateId();
+long timediff(timeval t1, timeval t2);
+
 void sendPacketToPlayer(RatId);
 void sendPacket();
 void sendHeartbeat();
+
+/* Packet processing routines */
 void processPacket(MWEvent *);
+void processHeartbeat(heartbeat *hb);
+
 void netInit(void);
 
 void ConvertIncoming(MW244BPacket *);
