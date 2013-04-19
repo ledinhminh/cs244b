@@ -8,6 +8,8 @@
 #define TYPE_NAME_REQUEST   0x1
 #define TYPE_NAME_RESPONSE  0x2
 
+#define MAX_RAT_NAME 20
+
 struct MW244BPacket {
     uint8_t type;
     uint8_t body[32];
@@ -86,9 +88,9 @@ public:
     uint8_t seqMis;
     uint8_t dir;
     uint16_t score;
-    
-    bool hasMissile(){
-        return (xMis>=0 && yMis>=0);
+
+    bool hasMissile() {
+        return (xMis >= 0 && yMis >= 0);
     }
 
     virtual size_t size() const {
@@ -105,7 +107,7 @@ public:
         n.seqMis = seqMis;
         n.dir = dir;
         n.score = htons(score);
-        if(size < this->size() + offset) {
+        if(size < this->size() ) {
             return;
         }
         mazePacket::serialize(buf, size);
@@ -127,7 +129,7 @@ public:
 
     virtual void deserialize(uint8_t *buf, size_t size) {
         int offset = mazePacket::size();
-        if(size < this->size() + offset) {
+        if(size < this->size() ) {
             return;
         }
         mazePacket::deserialize(buf, size);
@@ -154,9 +156,33 @@ public:
     nameRequest() {
         type = TYPE_NAME_REQUEST;
     }
-    uint32_t targetID;
+    uint32_t targetId;
+
     virtual size_t size() const {
         return mazePacket::size() + 4;
+    }
+
+    virtual void serialize(uint8_t *buf, size_t size) {
+        int offset = mazePacket::size();
+        nameRequest n;
+        n.targetId = htonl(targetId);
+        if(size < this->size() ) {
+            return;
+        }
+        mazePacket::serialize(buf, size);
+        memcpy(buf + offset, &n.targetId, sizeof(n.targetId));
+        offset += sizeof(n.targetId);
+    }
+
+    virtual void deserialize(uint8_t *buf, size_t size) {
+        int offset = mazePacket::size();
+        if(size < this->size() ) {
+            return;
+        }
+        mazePacket::deserialize(buf, size);
+        memcpy(&targetId, buf + offset, sizeof(targetId));
+        offset += sizeof(targetId);
+        targetId = ntohl(targetId);
     }
 };
 
@@ -165,9 +191,30 @@ public:
     nameResponse() {
         type = TYPE_NAME_RESPONSE;
     }
-    char name[20];
+    char name[MAX_RAT_NAME];
+
     virtual size_t size() const {
-        return mazePacket::size() + 20;
+        return mazePacket::size() + sizeof(name);
+    }
+
+    virtual void serialize(uint8_t *buf, size_t size) {
+        int offset = mazePacket::size();
+        if(size < this->size() ) {
+            return;
+        }
+        mazePacket::serialize(buf, size);
+        memcpy(buf + offset, name, sizeof(name));
+        offset += sizeof(name);
+    }
+
+    virtual void deserialize(uint8_t *buf, size_t size) {
+        int offset = mazePacket::size();
+        if(size < this->size() ) {
+            return;
+        }
+        mazePacket::deserialize(buf, size);
+        memcpy(name, buf + offset, sizeof(name));
+        offset += sizeof(name);
     }
 };
 

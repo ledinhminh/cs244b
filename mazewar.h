@@ -63,6 +63,7 @@ SOFTWARE.
 
 /* Timeouts(ms) */
 #define JOIN_TIMEOUT 2000
+#define MISSILE_SPEED 200
 
 /* You can modify this if you want to */
 #define	MAX_RATS	8
@@ -317,6 +318,12 @@ public:
     void dirMissileIs(Direction dirMissile) {
         this->dirMissile_ = dirMissile;
     }
+    inline timeval updateMissile() const {
+        return updateMissile_;
+    }
+    void updateMissileIs(timeval updateMissile) {
+        this->updateMissile_ = updateMissile;
+    }
 
 
     MazeType maze_;
@@ -354,6 +361,7 @@ protected:
     Loc yMissile_;
     Direction dirMissile_;
     bool hasMissile_;
+    timeval updateMissile_;
 
 };
 extern MazewarInstance::Ptr M;
@@ -445,6 +453,7 @@ void NewPosition(MazewarInstance::Ptr M);
 void MWError(char *);
 Score GetRatScore(RatIndexType);
 const char  *GetRatName(RatIndexType);
+RatIndexType getRatIndexById(RatId id);
 void ratState(void);
 void manageMissiles(void);
 void DoViewUpdate(void);
@@ -454,12 +463,14 @@ uint32_t generateId();
 long timediff(timeval t1, timeval t2);
 
 void sendPacketToPlayer(RatId);
-void sendPacket();
+void sendPacket(mazePacket *);
 void sendHeartbeat();
 
 /* Packet processing routines */
 void processPacket(MWEvent *);
-void processHeartbeat(heartbeat *hb);
+void processHeartbeat(heartbeat *);
+void processNameRequest(nameRequest *);
+void processNameResponse(nameResponse *);
 
 void netInit(void);
 

@@ -35,7 +35,11 @@ int main(int argc, char *argv[])
     signal(SIGTERM, quit);
 
     getName("Welcome to CS244B MazeWar!\n\nYour Name", &ratName);
-    ratName[strlen(ratName) - 1] = 0;
+    if(strlen(ratName) < MAX_RAT_NAME) {
+        ratName[strlen(ratName) - 1] = 0;
+    } else {
+        ratName[MAX_RAT_NAME - 1] = 0;
+    }
 
     M = MazewarInstance::mazewarInstanceNew(string(ratName));
     MazewarInstance *a = M.ptr();
@@ -68,7 +72,6 @@ play(void)
         NextEvent(&event, M->theSocket());
         /* Only listen for heartbeat during Phase.Join */
         if(phase == Join) {
-            cout << "join" << endl;
             if(event.eventType == EVENT_NETWORK) {
                 processPacket(&event);
             }
@@ -353,16 +356,19 @@ void peekStop()
 
 void shoot()
 {
+    timeval cur;
     if(M->hasMissile()) {
         return;
     }
     M->scoreIs( M->score().value() - 1 );
-    UpdateScoreCard(M->myRatId().value());
+    UpdateScoreCard(MY_RAT_INDEX);
 
+    gettimeofday(&cur, NULL);
     M->hasMissileIs(true);
     M->xMissileIs(MY_X_LOC);
     M->yMissileIs(MY_Y_LOC);
     M->dirMissileIs(MY_DIR);
+    M->updateMissileIs(cur);
 
 
 }
@@ -479,10 +485,16 @@ void manageMissiles()
     register int	oldty = MY_Y_MIS;
     register int	tx = oldtx;
     register int	ty = oldty;
+    timeval cur;
     if(!M->hasMissile()) {
         return;
     }
-
+    gettimeofday(&cur, NULL);
+    if(timediff(cur, M->updateMissile()) < MISSILE_SPEED) {
+        return;
+    } else {
+        M->updateMissileIs(cur);
+    }
     /* TODO: check for hits */
     switch(MY_DIR_MIS) {
     case NORTH:
@@ -578,9 +590,9 @@ void sendPacket(mazePacket *pack)
     uint8_t buf[64];
     memset(buf, 0, sizeof(64));
     pack->serialize(buf, sizeof(buf));
-    for(int j = 0; j < pack->size(); j++) {
-        printf("%02X", buf[j]);
-    }
+    //for(int j = 0; j < pack->size(); j++) {
+    //    printf("%02X", buf[j]);
+    //}
     if (sendto((int)M->theSocket(), &buf, pack->size(), 0,
                (sockaddr *) &groupAddr, sizeof(Sockaddr)) < 0) {
         MWError("Sample error");
@@ -604,7 +616,6 @@ void sendHeartbeat()
         hb->xMis = -1;
         hb->yMis = -1;
     }
-    cout << "sending hb" << endl;
     sendPacket(hb);
 }
 
@@ -616,22 +627,27 @@ void processPacket (MWEvent *eventPacket)
 {
 
     MW244BPacket    *pack = eventPacket->eventDetail;
-    cout << pack->type << endl;
+    uint8_t *payload = reinterpret_cast<uint8_t *>(pack);
+    size_t size = sizeof(MW244BPacket);
     switch (pack->type) {
     case TYPE_HEARTBEAT: {
-        heartbeat hb;
-        hb.deserialize(reinterpret_cast<uint8_t *>(pack), sizeof(MW244BPacket));
-        std::cout << "heartbeat" << endl;
-        printf("%d,%d,%d\n", hb.xLoc, hb.yLoc, hb.score);
-        processHeartbeat(&hb);
+        heartbeat pkt;
+        pkt.deserialize(payload, size);
+        processHeartbeat(&pkt);
     }
     break;
     case TYPE_NAME_REQUEST: {
+        nameRequest pkt;
+        pkt.deserialize(payload, size);
         std::cout << "name req" << endl;
+        processNameRequest(&pkt);
     }
     break;
     case TYPE_NAME_RESPONSE: {
+        nameResponse pkt;
+        pkt.deserialize(payload, size);
         std::cout << "name res" << endl;
+        processNameResponse(&pkt);
     }
     break;
     default:
@@ -646,55 +662,100 @@ void processHeartbeat(heartbeat *hb)
 {
     if(hb->id == M->myRatId().value()) {
         /* from Me */
+        //TODO
     } else {
         bool existing = false;
         int index;
         Rat r;
         for(index = 1; index < MAX_RATS; index++) {
             r = M->rat(index);
-            if(r.playing && r.id == hb->id) {
+            if(r.playing && r.id.value() == hb->id) {
                 existing = true;
                 break;
             }
-            if(!r.playing){
+            if(!r.playing) {
                 break;
             }
         }
         if(existing) {
             /* from existing player */
-            if(r.seqNum<hb->seqNum){
-                r.seqNum=hb->seqNum;
-                r.x=Loc(hb->xLoc);
-                r.y=Loc(hb->yLoc);
-                r.dir=Direction(hb->dir);
-                r.score=Score(hb->score);
-                if((r.hasMissile=hb->hasMissile())==true){
-                    r.xMis=Loc(hb->xMis);
-                    r.yMis=Loc(hb->yMis);
+            if(r.seqNum < hb->seqNum) {
+                Rat old=r;
+                r.seqNum = hb->seqNum;
+                r.x = Loc(hb->xLoc);
+                r.y = Loc(hb->yLoc);
+                r.dir = Direction(hb->dir);
+                r.score = Score(hb->score);
+                if((r.hasMissile = hb->hasMissile()) == true) {
+                    r.xMis = Loc(hb->xMis);
+                    r.yMis = Loc(hb->yMis);
                 }
-                M->ratIs(r,index);
+                M->ratIs(r, index);
+                if(old.score.value()!=r.score.value()){
+                    UpdateScoreCard(index);
+                }
             }
         } else {
             /* from new player */
-            if(index==MAX_RATS){
+            if(index == MAX_RATS) {
                 cout << "Reached max player. New player ignored." << endl;
-            }else{
+            } else {
                 Rat nr;
-                nr.playing=true;
-                nr.id=hb->id;
-                r.seqNum=hb->seqNum;
-                r.x=Loc(hb->xLoc);
-                r.y=Loc(hb->yLoc);
-                r.dir=Direction(hb->dir);
-                r.score=Score(hb->score);
-                if((r.hasMissile=hb->hasMissile())==true){
-                    r.xMis=Loc(hb->xMis);
-                    r.yMis=Loc(hb->yMis);
+                nr.playing = true;
+                nr.id = RatId(hb->id);
+                nr.seqNum = hb->seqNum;
+                nr.x = Loc(hb->xLoc);
+                nr.y = Loc(hb->yLoc);
+                nr.dir = Direction(hb->dir);
+                nr.score = Score(hb->score);
+                if((r.hasMissile = hb->hasMissile()) == true) {
+                    nr.xMis = Loc(hb->xMis);
+                    nr.yMis = Loc(hb->yMis);
                 }
-                M->ratIs(nr,index);
-                /* TODO: Get name new player name */
+                M->ratIs(nr, index);
+                printf("new player[%d]=%X\n", index, nr.id.value());
+                /* Get name new player name */
+                nameRequest *pkt =
+                    (nameRequest *)packetFactory::createPacket(TYPE_NAME_REQUEST);
+                pkt->id = M->myRatId().value();
+                pkt->seqNum = seqNum++;
+                pkt->targetId = nr.id.value();
+                sendPacket(pkt);
             }
         }
+    }
+
+}
+
+void processNameRequest(nameRequest *pkt)
+{
+    if(pkt->targetId == M->myRatId().value()) {
+        /* Respond only when asking my name */
+        nameResponse *pkt =
+            (nameResponse *)packetFactory::createPacket(TYPE_NAME_RESPONSE);
+        pkt->id = M->myRatId().value();
+        pkt->seqNum = seqNum++;
+        const char *name = GetRatName(MY_RAT_INDEX);
+        memcpy(pkt->name, name, strlen(name) + 1);
+        sendPacket(pkt);
+        printf("[%X]sending res\n", pkt->id);
+    }
+}
+
+void processNameResponse(nameResponse *pkt)
+{
+    if(pkt->id == M->myRatId().value()) {
+        return;
+    }
+    printf("[%X]res from %X\n", M->myRatId().value(), pkt->id);
+    RatIndexType index = getRatIndexById(RatId(pkt->id));
+    if(index == MAX_RATS) {
+        MWError("Name response from unknown client.");
+    } else {
+        Rat r = M->rat(index);
+        r.name = string(pkt->name);
+        M->ratIs(r, index);
+        UpdateScoreCard(index);
     }
 
 }
@@ -820,4 +881,18 @@ uint32_t generateId()
 long timediff(timeval t1, timeval t2)
 {
     return (t1.tv_sec - t2.tv_sec) * 1000 + (t1.tv_usec - t2.tv_usec) / 1000;
+}
+
+RatIndexType getRatIndexById(RatId id)
+{
+    int index;
+    Rat r;
+    for(index = 1; index < MAX_RATS; index++) {
+        r = M->rat(index);
+        printf("Target=%X Check:[%d]=%X\n", id.value(), index, r.id.value());
+        if(r.playing && r.id.value() == id.value()) {
+            break;
+        }
+    }
+    return index;
 }
