@@ -458,11 +458,11 @@ void ratState(void);
 void manageMissiles(void);
 void DoViewUpdate(void);
 
+bool isConflictPosition(Loc x, Loc y);
 void checkJoinComplete(timeval);
 uint32_t generateId();
 long timediff(timeval t1, timeval t2);
 
-void sendPacketToPlayer(RatId);
 void sendPacket(mazePacket *);
 void sendHeartbeat();
 
@@ -471,13 +471,11 @@ void processPacket(MWEvent *);
 void processHeartbeat(heartbeat *);
 void processNameRequest(nameRequest *);
 void processNameResponse(nameResponse *);
+void processKilled(killed *);
+void processKillConfirmed(killConfirmed *);
+void processLeave(leave *);
 
 void netInit(void);
-
-void ConvertIncoming(MW244BPacket *);
-void ConvertOutgoing(MW244BPacket *);
-
-
 
 /* winsys.c */
 void InitWindow(int, char **);
@@ -509,6 +507,12 @@ class packetFactory{
               return new nameRequest; 
             case TYPE_NAME_RESPONSE:
               return new nameResponse;
+            case TYPE_KILLED:
+              return new killed;
+            case TYPE_KILLCONFIRMED:
+              return new killConfirmed;
+            case TYPE_LEAVE:
+              return new leave;
             default:
               MWError("bad packet type for factory"); 
         }

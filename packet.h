@@ -7,6 +7,9 @@
 #define TYPE_HEARTBEAT      0x0
 #define TYPE_NAME_REQUEST   0x1
 #define TYPE_NAME_RESPONSE  0x2
+#define TYPE_KILLED         0x3
+#define TYPE_KILLCONFIRMED  0x4
+#define TYPE_LEAVE          0x5
 
 #define MAX_RAT_NAME 20
 
@@ -218,4 +221,104 @@ public:
     }
 };
 
+class killed : public mazePacket {
+public:
+    killed() {
+        type = TYPE_KILLED;
+    }
+    uint32_t killerId;
+    int8_t seqMis;
+
+    virtual size_t size() const {
+        return mazePacket::size() + 5;
+    }
+
+    virtual void serialize(uint8_t *buf, size_t size) {
+        int offset = mazePacket::size();
+        killed n;
+        n.killerId = htonl(killerId);
+        n.seqMis = seqMis;
+        if(size < this->size() ) {
+            return;
+        }
+        mazePacket::serialize(buf, size);
+        memcpy(buf + offset, &killerId, sizeof(killerId));
+        offset += sizeof(killerId);
+        memcpy(buf + offset, &seqMis, sizeof(seqMis));
+        offset += sizeof(seqMis);
+    }
+
+    virtual void deserialize(uint8_t *buf, size_t size) {
+        int offset = mazePacket::size();
+        if(size < this->size() ) {
+            return;
+        }
+        mazePacket::deserialize(buf, size);
+        memcpy(&killerId, buf + offset, sizeof(killerId));
+        offset += sizeof(killerId);
+        memcpy(&seqMis, buf + offset, sizeof(seqMis));
+        offset += sizeof(seqMis);
+        killerId = ntohl(killerId);
+    }
+};
+
+class killConfirmed: public mazePacket {
+public:
+    killConfirmed() {
+        type = TYPE_KILLCONFIRMED;
+    }
+    uint32_t victimId;
+    int8_t seqMis;
+
+    virtual size_t size() const {
+        return mazePacket::size() + 5;
+    }
+
+    virtual void serialize(uint8_t *buf, size_t size) {
+        int offset = mazePacket::size();
+        killConfirmed n;
+        n.victimId = htonl(victimId);
+        n.seqMis = seqMis;
+        if(size < this->size() ) {
+            return;
+        }
+        mazePacket::serialize(buf, size);
+        memcpy(buf + offset, &victimId, sizeof(victimId));
+        offset += sizeof(victimId);
+        memcpy(buf + offset, &seqMis, sizeof(seqMis));
+        offset += sizeof(seqMis);
+    }
+
+    virtual void deserialize(uint8_t *buf, size_t size) {
+        int offset = mazePacket::size();
+        if(size < this->size() ) {
+            return;
+        }
+        mazePacket::deserialize(buf, size);
+        memcpy(&victimId, buf + offset, sizeof(victimId));
+        offset += sizeof(victimId);
+        memcpy(&seqMis, buf + offset, sizeof(seqMis));
+        offset += sizeof(seqMis);
+        victimId = ntohl(victimId);
+    }
+};
+
+class leave: public mazePacket {
+public:
+    leave() {
+        type = TYPE_LEAVE;
+    }
+
+    virtual size_t size() const {
+        return mazePacket::size();
+    }
+
+    virtual void serialize(uint8_t *buf, size_t size) {
+        mazePacket::serialize(buf, size);
+    }
+
+    virtual void deserialize(uint8_t *buf, size_t size) {
+        mazePacket::deserialize(buf, size);
+    }
+};
 #endif

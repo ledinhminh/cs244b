@@ -209,6 +209,10 @@ forward(void)
     default:
         MWError("bad direction in Forward");
     }
+    if(isConflictPosition(Loc(tx), Loc(ty))) {
+        printf("forward aborted\n");
+        return;
+    }
     if ((MY_X_LOC != tx) || (MY_Y_LOC != ty)) {
         M->xlocIs(Loc(tx));
         M->ylocIs(Loc(ty));
@@ -238,6 +242,10 @@ void backward()
         break;
     default:
         MWError("bad direction in Backward");
+    }
+    if(isConflictPosition(Loc(tx), Loc(ty))) {
+        printf("backward aborted\n");
+        return;
     }
     if ((MY_X_LOC != tx) || (MY_Y_LOC != ty)) {
         M->xlocIs(Loc(tx));
@@ -455,20 +463,6 @@ const char *GetRatName(RatIndexType ratId)
 
 /* ----------------------------------------------------------------------- */
 
-/* This is just for the sample version, rewrite your own if necessary */
-void ConvertIncoming(MW244BPacket *p)
-{
-}
-
-/* ----------------------------------------------------------------------- */
-
-/* This is just for the sample version, rewrite your own if necessary */
-void ConvertOutgoing(MW244BPacket *p)
-{
-}
-
-/* ----------------------------------------------------------------------- */
-
 /* This is just for the sample version, rewrite your own */
 void ratStates()
 {
@@ -545,6 +539,7 @@ void DoViewUpdate()
 {
     if (updateView) {	/* paint the screen */
         ShowPosition(MY_X_LOC, MY_Y_LOC, MY_DIR);
+        //ShowAllPositions();
         if (M->peeking())
             ShowView(M->xPeek(), M->yPeek(), M->dirPeek());
         else
@@ -554,36 +549,9 @@ void DoViewUpdate()
 }
 
 /* ----------------------------------------------------------------------- */
-
 /*
- * Sample code to send a packet to a specific destination
+ * boardcast packet to UDP group
  */
-
-/*
- * Notice the call to ConvertOutgoing.  You might want to call ConvertOutgoing
- * before any call to sendto.
- */
-
-void sendPacketToPlayer(RatId ratId)
-{
-    /*
-    	MW244BPacket pack;
-    	DataStructureX *packX;
-
-    	pack.type = PACKET_TYPE_X;
-    	packX = (DataStructureX *) &pack.body;
-    	packX->foo = d1;
-    	packX->bar = d2;
-
-            ....
-
-    	ConvertOutgoing(pack);
-
-    	if (sendto((int)mySocket, &pack, sizeof(pack), 0,
-    		   (Sockaddr) destSocket, sizeof(Sockaddr)) < 0)
-    	  { MWError("Sample error") };
-    */
-}
 
 void sendPacket(mazePacket *pack)
 {
@@ -639,15 +607,36 @@ void processPacket (MWEvent *eventPacket)
     case TYPE_NAME_REQUEST: {
         nameRequest pkt;
         pkt.deserialize(payload, size);
-        std::cout << "name req" << endl;
+        std::cout << "name request" << endl;
         processNameRequest(&pkt);
     }
     break;
     case TYPE_NAME_RESPONSE: {
         nameResponse pkt;
         pkt.deserialize(payload, size);
-        std::cout << "name res" << endl;
+        std::cout << "name response" << endl;
         processNameResponse(&pkt);
+    }
+    break;
+    case TYPE_KILLED: {
+        killed pkt;
+        pkt.deserialize(payload, size);
+        std::cout << "killed" << endl;
+        processKilled(&pkt);
+    }
+    break;
+    case TYPE_KILLCONFIRMED: {
+        killConfirmed pkt;
+        pkt.deserialize(payload, size);
+        std::cout << "killConfirmed" << endl;
+        processKillConfirmed(&pkt);
+    }
+    break;
+    case TYPE_LEAVE: {
+        leave pkt;
+        pkt.deserialize(payload, size);
+        std::cout << "leave" << endl;
+        processLeave(&pkt);
     }
     break;
     default:
@@ -680,7 +669,7 @@ void processHeartbeat(heartbeat *hb)
         if(existing) {
             /* from existing player */
             if(r.seqNum < hb->seqNum) {
-                Rat old=r;
+                Rat old = r;
                 r.seqNum = hb->seqNum;
                 r.x = Loc(hb->xLoc);
                 r.y = Loc(hb->yLoc);
@@ -691,7 +680,7 @@ void processHeartbeat(heartbeat *hb)
                     r.yMis = Loc(hb->yMis);
                 }
                 M->ratIs(r, index);
-                if(old.score.value()!=r.score.value()){
+                if(old.score.value() != r.score.value()) {
                     UpdateScoreCard(index);
                 }
             }
@@ -757,6 +746,19 @@ void processNameResponse(nameResponse *pkt)
         M->ratIs(r, index);
         UpdateScoreCard(index);
     }
+}
+
+void processKilled(killed *)
+{
+
+}
+
+void processKillConfirmed(killConfirmed *)
+{
+
+}
+void processLeave(leave *)
+{
 
 }
 /* ----------------------------------------------------------------------- */
@@ -895,4 +897,19 @@ RatIndexType getRatIndexById(RatId id)
         }
     }
     return index;
+}
+
+bool isConflictPosition(Loc x, Loc y)
+{
+    int index;
+    Rat r;
+    for(index = 1; index < MAX_RATS; index++) {
+        r = M->rat(index);
+        printf("Check:[%d]=(%d,%d)\n", index, r.x.value(), r.y.value());
+        if(r.playing &&
+                (r.x.value() == x.value() && r.y.value() == y.value())) {
+            return true;
+        }
+    }
+    return false;
 }

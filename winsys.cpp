@@ -656,7 +656,7 @@ NextEvent(MWEvent *event, int socket)
 	    }
 	  if (fromLen != sizeof(struct sockaddr_in))
 	    continue;
-	  ConvertIncoming(event->eventDetail);
+	  //ConvertIncoming(event->eventDetail);
 	  return;
 	}
     }
