@@ -242,7 +242,7 @@ public:
             return;
         }
         mazePacket::serialize(buf, size);
-        memcpy(buf + offset, &killerId, sizeof(killerId));
+        memcpy(buf + offset, &n.killerId, sizeof(killerId));
         offset += sizeof(killerId);
         memcpy(buf + offset, &seqMis, sizeof(seqMis));
         offset += sizeof(seqMis);
@@ -283,7 +283,7 @@ public:
             return;
         }
         mazePacket::serialize(buf, size);
-        memcpy(buf + offset, &victimId, sizeof(victimId));
+        memcpy(buf + offset, &n.victimId, sizeof(victimId));
         offset += sizeof(victimId);
         memcpy(buf + offset, &seqMis, sizeof(seqMis));
         offset += sizeof(seqMis);

@@ -5,7 +5,7 @@
  *  DESCR:
  */
 
-/* #define DEBUG */
+#define DEBUG 1
 
 #include "main.h"
 #include <string>
@@ -85,29 +85,39 @@ play(void)
         if(phase == Init) {
             cout << "init" << endl;
             M->myRatIdIs(generateId());
+            M->scoreIs( INIT_SCORE );
+            UpdateScoreCard(MY_RAT_INDEX);
+            NewPosition(M);
             phase = Play;
         }
-        /* Process all inputs during Phase.Play*/
+        /* Process all inputs during Phase.Play */
         if (!M->peeking())
             switch(event.eventType) {
             case EVENT_A:
                 aboutFace();
+                sendHeartbeat();
                 break;
 
             case EVENT_S:
                 leftTurn();
+                sendHeartbeat();
                 break;
 
             case EVENT_D:
                 forward();
+                stateChanged = true;
+                sendHeartbeat();
                 break;
 
             case EVENT_F:
                 rightTurn();
+                sendHeartbeat();
                 break;
 
             case EVENT_BAR:
                 backward();
+                stateChanged = true;
+                sendHeartbeat();
                 break;
 
             case EVENT_LEFT_D:
@@ -116,6 +126,7 @@ play(void)
 
             case EVENT_MIDDLE_D:
                 shoot();
+                sendHeartbeat();
                 break;
 
             case EVENT_RIGHT_D:
@@ -143,7 +154,9 @@ play(void)
                 break;
             }
 
-        ratStates();		/* clean house */
+        /* clean house */
+        clearGhostRats();
+        resolveConflictPosition();
 
         if(phase == Killed) {
             if(checkTimeout(infoKilled.hitTime, KILLED_TIMEOUT)) {
@@ -151,7 +164,9 @@ play(void)
                 phase = Play;
             } else {
                 /* Send Killed if not timeout */
-                sendKilled();
+                if(checkTimeout(M->lastHeartbeat(), HEARTBEAT_TIMEOUT)) {
+                    sendKilled();
+                }
             }
         } else {
             /* Ignore other missiles while waiting for killConfirmed */
@@ -161,8 +176,10 @@ play(void)
 
         DoViewUpdate();
 
-        /* Any info to send over network? */
-        sendHeartbeat();
+        /* Send on state change OR heartbeat timeout */
+        if(checkTimeout(M->lastHeartbeat(), HEARTBEAT_TIMEOUT)) {
+            sendHeartbeat();
+        }
 
     }
 }
@@ -383,7 +400,7 @@ void shoot()
     if(M->hasMissile()) {
         return;
     }
-    M->scoreIs( M->score().value() - 1 );
+    M->scoreIs( M->score().value() + MISSILE_FIRE_SCORE );
     UpdateScoreCard(MY_RAT_INDEX);
 
     gettimeofday(&cur, NULL);
@@ -414,7 +431,7 @@ void shoot()
 
 void quit(int sig)
 {
-
+    sendLeave();
     StopWindow();
     exit(0);
 }
@@ -444,6 +461,7 @@ void NewPosition(MazewarInstance::Ptr m)
     m->xlocIs(newX);
     m->ylocIs(newY);
     m->dirIs(dir);
+    updateView = TRUE;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -485,10 +503,22 @@ const char *GetRatName(RatIndexType ratId)
 
 /* ----------------------------------------------------------------------- */
 
+void clearGhostRats()
+{
+    Rat r;
+    for(int index = 1; index < MAX_RATS; index++) {
+        r = M->rat(index);
+        if(r.playing && checkTimeout(r.lastHeartbeat, KEEPLIVE_TIMEOUT)) {
+            r.playing = false;
+            UpdateScoreCard(index);
+        }
+    }
+}
+
 /* Resolve possible positional conflict after heartbeat
  * Note: only the rat with LOWER ID moves away
  * */
-void ratStates()
+void resolveConflictPosition()
 {
     int step, dist, direction;
     int newx = MY_X_LOC;
@@ -574,7 +604,7 @@ void manageMissiles()
         return;
     }
     gettimeofday(&cur, NULL);
-    if(timediff(cur, M->updateMissile()) < MISSILE_SPEED) {
+    if(!checkTimeout(M->updateMissile(), MISSILE_SPEED)) {
         return;
     } else {
         M->updateMissileIs(cur);
@@ -647,9 +677,6 @@ void sendPacket(mazePacket *pack)
     uint8_t buf[64];
     memset(buf, 0, sizeof(64));
     pack->serialize(buf, sizeof(buf));
-    //for(int j = 0; j < pack->size(); j++) {
-    //    printf("%02X", buf[j]);
-    //}
     if (sendto((int)M->theSocket(), &buf, pack->size(), 0,
                (sockaddr *) &groupAddr, sizeof(Sockaddr)) < 0) {
         MWError("Sample error");
@@ -659,22 +686,24 @@ void sendPacket(mazePacket *pack)
 
 void sendHeartbeat()
 {
-    heartbeat *hb = (heartbeat *)packetFactory::createPacket(TYPE_HEARTBEAT);
-    hb->id = M->myRatId().value();
-    hb->seqNum = seqNum++;
-    hb->xLoc = MY_X_LOC;
-    hb->yLoc = MY_Y_LOC;
-    hb->dir = MY_DIR;
-    hb->score = M->score().value();
-    hb->seqMis = seqMis;
+    heartbeat *pkt = (heartbeat *)packetFactory::createPacket(TYPE_HEARTBEAT);
+    pkt->id = M->myRatId().value();
+    pkt->seqNum = seqNum++;
+    pkt->xLoc = MY_X_LOC;
+    pkt->yLoc = MY_Y_LOC;
+    pkt->dir = MY_DIR;
+    pkt->score = M->score().value();
     if(M->hasMissile()) {
-        hb->xMis = MY_X_MIS;
-        hb->yMis = MY_Y_MIS;
+        pkt->xMis = MY_X_MIS;
+        pkt->yMis = MY_Y_MIS;
+        pkt->seqMis = seqMis-1;
     } else {
-        hb->xMis = -1;
-        hb->yMis = -1;
+        pkt->xMis = -1;
+        pkt->yMis = -1;
+        pkt->seqMis = 0;
     }
-    sendPacket(hb);
+    sendPacket(pkt);
+    M->lastHeartbeatIs();
 }
 
 void sendKilled()
@@ -685,7 +714,18 @@ void sendKilled()
     pkt->killerId = infoKilled.killerId;
     pkt->seqMis = infoKilled.seqMis;
     sendPacket(pkt);
+    if(DEBUG) printf("[%X]-killed->[%X]\n", M->myRatId().value(), pkt->killerId);
 }
+
+void sendLeave()
+{
+    leave *pkt = (leave *)packetFactory::createPacket(TYPE_LEAVE);
+    pkt->id = M->myRatId().value();
+    pkt->seqNum = seqNum++;
+    sendPacket(pkt);
+    if(DEBUG) printf("sent leave\n");
+}
+
 
 /* ----------------------------------------------------------------------- */
 
@@ -742,31 +782,22 @@ void processPacket (MWEvent *eventPacket)
     default:
         MWError("Unknown incoming protocol");
     }
-
-    //packX = (DataStructureX *) &(pack->body);
-
 }
 
 void processHeartbeat(heartbeat *hb)
 {
     if(hb->id == M->myRatId().value()) {
         /* from Me */
-        //TODO: possile restart game
-    } else {
-        bool existing = false;
-        int index;
-        Rat r;
-        for(index = 1; index < MAX_RATS; index++) {
-            r = M->rat(index);
-            if(r.playing && r.id.value() == hb->id) {
-                existing = true;
-                break;
-            }
-            if(!r.playing) {
-                break;
-            }
+        if(seqNum <= hb->seqNum) {
+            phase = Join;
         }
+    } else {
+        int index;
+        RatIndexType iold = getRatIndexById(RatId(hb->id));
+        bool existing = iold < MAX_RATS;
+        Rat r;
         if(existing) {
+            r = M->rat(iold);
             /* from existing player */
             if(r.seqNum < hb->seqNum) {
                 Rat old = r;
@@ -780,14 +811,22 @@ void processHeartbeat(heartbeat *hb)
                     r.yMis = Loc(hb->yMis);
                     r.seqMis = hb->seqMis;
                 }
-                M->ratIs(r, index);
+                r.updateHeartbeat();
+                M->ratIs(r, iold);
                 stateChanged = true;
                 if(old.score.value() != r.score.value()) {
-                    UpdateScoreCard(index);
+                    UpdateScoreCard(iold);
                 }
+                //printf("[%X] score=%d\n", r.id.value(), r.score.value());
             }
         } else {
             /* from new player */
+            for(index = 1; index < MAX_RATS; index++) {
+                r = M->rat(index);
+                if(!r.playing) {
+                    break;
+                }
+            }
             if(index == MAX_RATS) {
                 cout << "Reached max player. New player ignored." << endl;
             } else {
@@ -804,6 +843,7 @@ void processHeartbeat(heartbeat *hb)
                     nr.yMis = Loc(hb->yMis);
                     nr.seqMis = hb->seqMis;
                 }
+                r.updateHeartbeat();
                 M->ratIs(nr, index);
                 stateChanged = true;
                 printf("new player[%d]=%X\n", index, nr.id.value());
@@ -865,15 +905,17 @@ void processKilled(killed *pkt)
         if(r.seqNum >= pkt->seqNum) {
             return;
         }
+        if(DEBUG) printf("I'm the killer: seqMis[%X]\n", pkt->seqMis);
         std::vector<infoMis> &infos = M->trackedMissile();
         std::vector<infoMis>::iterator it;
         for(it = infos.begin(); it != infos.end(); ++it) {
+            if(DEBUG) printf("tracked seqMis[%X]\n", it->seqMis);
             if(it->seqMis == pkt->seqMis) {
                 if(!it->registeredKill) {
                     it->registeredKill = true;
                     it->victimId = pkt->id;
                     it->seqMis = pkt->seqMis;
-                    M->scoreIs( M->score().value() + 11 );
+                    M->scoreIs( M->score().value() + MISSILE_KILLER_SCORE);
                     UpdateScoreCard(MY_RAT_INDEX);
                 }
                 killConfirmed *pkt =
@@ -883,6 +925,7 @@ void processKilled(killed *pkt)
                 pkt->victimId = it->victimId;
                 pkt->seqMis = it->seqMis;
                 sendPacket(pkt);
+                if(DEBUG) printf("sent killconfirmed\n");
             }
         }
     }
@@ -907,16 +950,33 @@ void processKillConfirmed(killConfirmed *pkt)
         /* Clear outstanding infoKilled */
         phase = Play;
         /* Update score */
-        M->scoreIs( M->score().value() - 5 );
+        M->scoreIs( M->score().value() + MISSILE_VICTIM_SCORE );
         UpdateScoreCard(MY_RAT_INDEX);
         /* Respawn */
         NewPosition(M);
+
     }
 }
-void processLeave(leave *)
-{
 
+void processLeave(leave *pkt)
+{
+    if(pkt->id == M->myRatId().value()) {
+        return;
+    }
+    RatIndexType index = getRatIndexById(RatId(pkt->id));
+    if(index == MAX_RATS) {
+        MWError("Name response from unknown client.");
+    } else {
+        Rat r = M->rat(index);
+        if(r.seqNum >= pkt->seqNum) {
+            return;
+        }
+        r.playing = false;
+        M->ratIs(r, index);
+        UpdateScoreCard(index);
+    }
 }
+
 /* ----------------------------------------------------------------------- */
 
 /* This will presumably be modified by you.
@@ -1049,7 +1109,6 @@ RatIndexType getRatIndexById(RatId id)
     Rat r;
     for(index = 1; index < MAX_RATS; index++) {
         r = M->rat(index);
-        printf("Target=%X Check:[%d]=%X\n", id.value(), index, r.id.value());
         if(r.playing && r.id.value() == id.value()) {
             break;
         }
@@ -1063,7 +1122,6 @@ bool isConflictPosition(Loc x, Loc y)
     Rat r;
     for(index = 1; index < MAX_RATS; index++) {
         r = M->rat(index);
-        printf("Check:[%d]=(%d,%d)\n", index, r.x.value(), r.y.value());
         if(r.playing &&
                 (r.x.value() == x.value() && r.y.value() == y.value())) {
             return true;

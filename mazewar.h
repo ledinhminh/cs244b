@@ -66,13 +66,20 @@ SOFTWARE.
 #define JOIN_TIMEOUT 2000
 #define MISSILE_SPEED 200
 #define KILLED_TIMEOUT 5000
+#define HEARTBEAT_TIMEOUT 200
+#define KEEPLIVE_TIMEOUT 5000
+
+/* Score */
+#define INIT_SCORE 42
+#define MISSILE_FIRE_SCORE (-1)
+#define MISSILE_KILLER_SCORE 11
+#define MISSILE_VICTIM_SCORE (-5)
 
 /* You can modify this if you want to */
 #define	MAX_RATS	8
 #define	MAX_TRACKED_MISSILE 2
 
 /* network stuff */
-/* Feel free to modify.  This is the simplest version we came up with */
 
 /* A unique MAZEPORT will be assigned to your team by the TA */
 #define	MAZEPORT	5023
@@ -204,6 +211,11 @@ public:
     RatId id;
     uint32_t seqNum;
     uint8_t seqMis;
+    timeval lastHeartbeat;
+
+    void updateHeartbeat(){
+        gettimeofday(&lastHeartbeat, NULL);
+    }
 };
 
 typedef	RatAppearance			RatApp_type [MAX_RATS];
@@ -344,6 +356,12 @@ public:
         return trackedMissile_;
     }
 
+    void lastHeartbeatIs() {
+        gettimeofday(&(this->lastHeartbeat_),NULL);
+    }
+    inline timeval lastHeartbeat() const {
+        return lastHeartbeat_;
+    }
 
     MazeType maze_;
     RatName myName_;
@@ -375,6 +393,8 @@ protected:
     Loc xPeek_;
     Loc yPeek_;
     int active_;
+
+    timeval lastHeartbeat_;
 
     Loc xMissile_;
     Loc yMissile_;
@@ -474,11 +494,12 @@ void MWError(char *);
 Score GetRatScore(RatIndexType);
 const char  *GetRatName(RatIndexType);
 RatIndexType getRatIndexById(RatId id);
-void ratState(void);
 void manageHits(void);
 void manageMissiles(void);
 void DoViewUpdate(void);
 
+void clearGhostRats();
+void resolveConflictPosition();
 bool isConflictPosition(Loc x, Loc y);
 bool checkTimeout(timeval, long);
 uint32_t generateId();
@@ -487,6 +508,7 @@ long timediff(timeval t1, timeval t2);
 void sendPacket(mazePacket *);
 void sendHeartbeat();
 void sendKilled();
+void sendLeave();
 
 /* Packet processing routines */
 void processPacket(MWEvent *);
