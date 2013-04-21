@@ -22,7 +22,8 @@ static uint32_t seqNum = 0;
 static uint8_t seqMis = 0;
 
 static enum Phase phase = Join;
-
+static infoKill infoKilled;
+static bool stateChanged = false;
 int main(int argc, char *argv[])
 {
     Loc x(1);
@@ -75,7 +76,9 @@ play(void)
             if(event.eventType == EVENT_NETWORK) {
                 processPacket(&event);
             }
-            checkJoinComplete(startup);
+            if(checkTimeout(startup, JOIN_TIMEOUT)) {
+                phase = Init;
+            }
             continue;
         }
         /* Init after Join completes */
@@ -142,6 +145,18 @@ play(void)
 
         ratStates();		/* clean house */
 
+        if(phase == Killed) {
+            if(checkTimeout(infoKilled.hitTime, KILLED_TIMEOUT)) {
+                /* Ignore last hit if imeout */
+                phase = Play;
+            } else {
+                /* Send Killed if not timeout */
+                sendKilled();
+            }
+        } else {
+            /* Ignore other missiles while waiting for killConfirmed */
+            manageHits();
+        }
         manageMissiles();
 
         DoViewUpdate();
@@ -378,6 +393,16 @@ void shoot()
     M->dirMissileIs(MY_DIR);
     M->updateMissileIs(cur);
 
+    /* tracked missile, used to ack killed */
+    infoMis info;
+    info.seqMis = seqMis++;
+    info.registeredKill = false;
+    info.victimId = 0;
+    std::vector<infoMis> &infos = M->trackedMissile();
+    while(infos.size() > MAX_TRACKED_MISSILE) {
+        infos.erase(infos.begin());
+    }
+    infos.push_back(info);
 
 }
 
@@ -403,13 +428,10 @@ void NewPosition(MazewarInstance::Ptr m)
     Loc newY(0);
     Direction dir(0); /* start on occupied square */
 
-    while (M->maze_[newX.value()][newY.value()]) {
+    while (M->maze_[newX.value()][newY.value()] && !isConflictPosition(newX, newY)) {
         /* MAZE[XY]MAX is a power of 2 */
         newX = Loc(random() & (MAZEXMAX - 1));
         newY = Loc(random() & (MAZEYMAX - 1));
-
-        /* In real game, also check that square is
-           unoccupied by another rat */
     }
 
     /* prevent a blank wall at first glimpse */
@@ -463,16 +485,84 @@ const char *GetRatName(RatIndexType ratId)
 
 /* ----------------------------------------------------------------------- */
 
-/* This is just for the sample version, rewrite your own */
+/* Resolve possible positional conflict after heartbeat
+ * Note: only the rat with LOWER ID moves away
+ * */
 void ratStates()
 {
-    /* In our sample version, we don't know about the state of any rats over
-       the net, so this is a no-op */
+    int step, dist, direction;
+    int newx = MY_X_LOC;
+    int newy = MY_Y_LOC;
+    Rat r;
+    if(!stateChanged || !isConflictPosition(Loc(MY_X_LOC), Loc(MY_Y_LOC))) {
+        stateChanged = false;
+        return;
+    }
+    step = 0;
+    while(true) {
+        newx = MY_X_LOC;
+        newy = MY_Y_LOC;
+        dist = step / 4 + 1;
+        direction = step % 4;
+        switch(direction) {
+        case 0:
+            newx += dist;
+            break;
+        case 1:
+            newx -= dist;
+            break;
+        case 2:
+            newy += dist;
+            break;
+        case 3:
+            newy -= dist;
+            break;
+        default:
+            MWError("Invalid direction");
+        }
+        /* Check if is valid maze cell */
+        if(newx < 0 || newx >= MAZEXMAX || newy < 0 || newy >= MAZEYMAX) {
+            continue;
+        }
+        if (!M->maze_[newx][newy]) {
+            continue;
+        }
+        /* Check aganist all rats with higher ID */
+        for(int index = 1; index < MAX_RATS; index++) {
+            r = M->rat(index);
+            if(r.playing && M->myRatId().value() < r.id.value() &&
+                    (r.x.value() == newx && r.y.value() == newy)) {
+                dist++;
+                continue;
+            }
+        }
+        break;
+    }
+
+    M->xlocIs(newx);
+    M->ylocIs(newy);
+    stateChanged = false;
 }
 
 /* ----------------------------------------------------------------------- */
+void manageHits()
+{
+    int index;
+    Rat r;
+    for(index = 1; index < MAX_RATS; index++) {
+        r = M->rat(index);
+        if(r.playing && r.hasMissile &&
+                (r.xMis.value() == MY_X_LOC && r.yMis.value() == MY_Y_LOC)) {
+            infoKilled.seqMis = r.seqMis;
+            infoKilled.killerId = r.id.value();
+            gettimeofday(&infoKilled.hitTime, NULL);
+            phase = Killed;
+            break;
+        }
+    }
+}
 
-/* This is just for the sample version, rewrite your own */
+
 void manageMissiles()
 {
     register int	oldtx = MY_X_MIS;
@@ -489,7 +579,6 @@ void manageMissiles()
     } else {
         M->updateMissileIs(cur);
     }
-    /* TODO: check for hits */
     switch(MY_DIR_MIS) {
     case NORTH:
         if (!M->maze_[tx + 1][ty]) {
@@ -565,6 +654,7 @@ void sendPacket(mazePacket *pack)
                (sockaddr *) &groupAddr, sizeof(Sockaddr)) < 0) {
         MWError("Sample error");
     }
+    delete pack;
 }
 
 void sendHeartbeat()
@@ -585,6 +675,16 @@ void sendHeartbeat()
         hb->yMis = -1;
     }
     sendPacket(hb);
+}
+
+void sendKilled()
+{
+    killed *pkt = (killed *)packetFactory::createPacket(TYPE_KILLED);
+    pkt->id = M->myRatId().value();
+    pkt->seqNum = seqNum++;
+    pkt->killerId = infoKilled.killerId;
+    pkt->seqMis = infoKilled.seqMis;
+    sendPacket(pkt);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -651,7 +751,7 @@ void processHeartbeat(heartbeat *hb)
 {
     if(hb->id == M->myRatId().value()) {
         /* from Me */
-        //TODO
+        //TODO: possile restart game
     } else {
         bool existing = false;
         int index;
@@ -678,8 +778,10 @@ void processHeartbeat(heartbeat *hb)
                 if((r.hasMissile = hb->hasMissile()) == true) {
                     r.xMis = Loc(hb->xMis);
                     r.yMis = Loc(hb->yMis);
+                    r.seqMis = hb->seqMis;
                 }
                 M->ratIs(r, index);
+                stateChanged = true;
                 if(old.score.value() != r.score.value()) {
                     UpdateScoreCard(index);
                 }
@@ -700,8 +802,10 @@ void processHeartbeat(heartbeat *hb)
                 if((r.hasMissile = hb->hasMissile()) == true) {
                     nr.xMis = Loc(hb->xMis);
                     nr.yMis = Loc(hb->yMis);
+                    nr.seqMis = hb->seqMis;
                 }
                 M->ratIs(nr, index);
+                stateChanged = true;
                 printf("new player[%d]=%X\n", index, nr.id.value());
                 /* Get name new player name */
                 nameRequest *pkt =
@@ -748,14 +852,66 @@ void processNameResponse(nameResponse *pkt)
     }
 }
 
-void processKilled(killed *)
+void processKilled(killed *pkt)
 {
-
+    if(pkt->id == M->myRatId().value() || pkt->killerId != M->myRatId().value()) {
+        return;
+    }
+    RatIndexType index = getRatIndexById(RatId(pkt->id));
+    if(index == MAX_RATS) {
+        MWError("Name response from unknown client.");
+    } else {
+        Rat r = M->rat(index);
+        if(r.seqNum >= pkt->seqNum) {
+            return;
+        }
+        std::vector<infoMis> &infos = M->trackedMissile();
+        std::vector<infoMis>::iterator it;
+        for(it = infos.begin(); it != infos.end(); ++it) {
+            if(it->seqMis == pkt->seqMis) {
+                if(!it->registeredKill) {
+                    it->registeredKill = true;
+                    it->victimId = pkt->id;
+                    it->seqMis = pkt->seqMis;
+                    M->scoreIs( M->score().value() + 11 );
+                    UpdateScoreCard(MY_RAT_INDEX);
+                }
+                killConfirmed *pkt =
+                    (killConfirmed *)packetFactory::createPacket(TYPE_KILLCONFIRMED);
+                pkt->id = M->myRatId().value();
+                pkt->seqNum = seqNum++;
+                pkt->victimId = it->victimId;
+                pkt->seqMis = it->seqMis;
+                sendPacket(pkt);
+            }
+        }
+    }
 }
 
-void processKillConfirmed(killConfirmed *)
+void processKillConfirmed(killConfirmed *pkt)
 {
-
+    if(pkt->id == M->myRatId().value() || pkt->victimId != M->myRatId().value()) {
+        return;
+    }
+    RatIndexType index = getRatIndexById(RatId(pkt->id));
+    if(index == MAX_RATS) {
+        MWError("Name response from unknown client.");
+    } else {
+        Rat r = M->rat(index);
+        if(r.seqNum >= pkt->seqNum) {
+            return;
+        }
+        if(phase != Killed) {
+            return;
+        }
+        /* Clear outstanding infoKilled */
+        phase = Play;
+        /* Update score */
+        M->scoreIs( M->score().value() - 5 );
+        UpdateScoreCard(MY_RAT_INDEX);
+        /* Respawn */
+        NewPosition(M);
+    }
 }
 void processLeave(leave *)
 {
@@ -852,12 +1008,14 @@ netInit()
 
 /* ----------------------------------------------------------------------- */
 
-void checkJoinComplete(timeval startup)
+bool checkTimeout(timeval startup, long timeout)
 {
     struct timeval cur;
     gettimeofday(&cur, NULL);
-    if (timediff(cur, startup) > JOIN_TIMEOUT) {
-        phase = Init;
+    if (timediff(cur, startup) > timeout) {
+        return true;
+    } else {
+        return false;
     }
 }
 

@@ -51,6 +51,7 @@ SOFTWARE.
 #include "packet.h"
 #include <string>
 #include <iostream>
+#include <vector>
 #include <time.h>
 #include <stdlib.h>
 
@@ -64,9 +65,11 @@ SOFTWARE.
 /* Timeouts(ms) */
 #define JOIN_TIMEOUT 2000
 #define MISSILE_SPEED 200
+#define KILLED_TIMEOUT 5000
 
 /* You can modify this if you want to */
 #define	MAX_RATS	8
+#define	MAX_TRACKED_MISSILE 2
 
 /* network stuff */
 /* Feel free to modify.  This is the simplest version we came up with */
@@ -116,7 +119,19 @@ typedef	struct {
 }	BitCell;
 typedef	char						RatName[NAMESIZE];
 
-enum Phase{Join, Init, Play};
+enum Phase{Join, Init, Play, Killed};
+
+typedef struct {
+    uint8_t seqMis;
+    bool registeredKill;
+    uint32_t victimId;
+} infoMis;
+
+typedef struct {
+    timeval hitTime;
+    uint8_t seqMis;
+    uint32_t killerId;
+} infoKill;
 
 class Direction : public Ordinal<Direction, short> {
 public:
@@ -178,7 +193,7 @@ class Rat {
 public:
     Rat() :  playing(0), x(1), y(1), dir(NORTH),
     xMis(0), yMis(0), hasMissile(false), 
-    score(0), name("other"), id(0), seqNum(0) {};
+    score(0), name("other"), id(0), seqNum(0), seqMis(0) {};
     bool playing;
     Loc	x, y;
     Direction dir;
@@ -188,6 +203,7 @@ public:
     string name;
     RatId id;
     uint32_t seqNum;
+    uint8_t seqMis;
 };
 
 typedef	RatAppearance			RatApp_type [MAX_RATS];
@@ -324,6 +340,9 @@ public:
     void updateMissileIs(timeval updateMissile) {
         this->updateMissile_ = updateMissile;
     }
+    inline std::vector<infoMis>& trackedMissile(){
+        return trackedMissile_;
+    }
 
 
     MazeType maze_;
@@ -362,6 +381,7 @@ protected:
     Direction dirMissile_;
     bool hasMissile_;
     timeval updateMissile_;
+    std::vector<infoMis> trackedMissile_;
 
 };
 extern MazewarInstance::Ptr M;
@@ -455,16 +475,18 @@ Score GetRatScore(RatIndexType);
 const char  *GetRatName(RatIndexType);
 RatIndexType getRatIndexById(RatId id);
 void ratState(void);
+void manageHits(void);
 void manageMissiles(void);
 void DoViewUpdate(void);
 
 bool isConflictPosition(Loc x, Loc y);
-void checkJoinComplete(timeval);
+bool checkTimeout(timeval, long);
 uint32_t generateId();
 long timediff(timeval t1, timeval t2);
 
 void sendPacket(mazePacket *);
 void sendHeartbeat();
+void sendKilled();
 
 /* Packet processing routines */
 void processPacket(MWEvent *);
