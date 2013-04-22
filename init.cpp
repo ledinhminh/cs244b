@@ -97,7 +97,7 @@ MazeInit(int argc, char	**argv)
 
 	InitDisplay(argc, argv);
 
-	NewPosition(M);
+	//NewPosition(M);
 
 	printf("%d X LOC \n",M->xloc().value());
 	/*

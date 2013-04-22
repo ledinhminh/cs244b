@@ -24,32 +24,54 @@ static uint8_t seqMis = 0;
 static enum Phase phase = Join;
 static infoKill infoKilled;
 static bool stateChanged = false;
+
 int main(int argc, char *argv[])
 {
-    Loc x(1);
-    Loc y(5);
-    Direction dir(0);
     char *ratName;
-
+    if(argc == 5) {
+        ratName = argv[1];
+        int dirNum;
+        int xPos = atoi(argv[2]);
+        int yPos = atoi(argv[3]);
+        char dirChar = argv[4][0];
+        switch(dirChar) {
+        case 'n':
+            dirNum = NORTH;
+            break;
+        case 's':
+            dirNum = SOUTH;
+            break;
+        case 'w':
+            dirNum = WEST;
+            break;
+        case 'e':
+            dirNum = EAST;
+            break;
+        default:
+            MWError("Invalid direction");
+        }
+        M = MazewarInstance::mazewarInstanceNew(string(ratName));
+        strncpy(M->myName_, ratName, NAMESIZE);
+        MazeInit(argc, argv);
+        M->xlocIs(Loc(xPos));
+        M->ylocIs(Loc(yPos));
+        M->dirIs(Direction(dirNum));
+    } else {
+        getName("Welcome to CS244B MazeWar!\n\nYour Name", &ratName);
+        if(strlen(ratName) < MAX_RAT_NAME) {
+            ratName[strlen(ratName) - 1] = 0;
+        } else {
+            ratName[MAX_RAT_NAME - 1] = 0;
+        }
+        M = MazewarInstance::mazewarInstanceNew(string(ratName));
+        strncpy(M->myName_, ratName, NAMESIZE);
+        free(ratName);
+        MazeInit(argc, argv);
+        NewPosition(M);
+    }
     signal(SIGHUP, quit);
     signal(SIGINT, quit);
     signal(SIGTERM, quit);
-
-    getName("Welcome to CS244B MazeWar!\n\nYour Name", &ratName);
-    if(strlen(ratName) < MAX_RAT_NAME) {
-        ratName[strlen(ratName) - 1] = 0;
-    } else {
-        ratName[MAX_RAT_NAME - 1] = 0;
-    }
-
-    M = MazewarInstance::mazewarInstanceNew(string(ratName));
-    MazewarInstance *a = M.ptr();
-    strncpy(M->myName_, ratName, NAMESIZE);
-    free(ratName);
-
-    MazeInit(argc, argv);
-
-    NewPosition(M);
 
     play();
 
@@ -87,7 +109,7 @@ play(void)
             M->myRatIdIs(generateId());
             M->scoreIs( INIT_SCORE );
             UpdateScoreCard(MY_RAT_INDEX);
-            NewPosition(M);
+            //NewPosition(M);
             phase = Play;
         }
         /* Process all inputs during Phase.Play */
@@ -696,7 +718,7 @@ void sendHeartbeat()
     if(M->hasMissile()) {
         pkt->xMis = MY_X_MIS;
         pkt->yMis = MY_Y_MIS;
-        pkt->seqMis = seqMis-1;
+        pkt->seqMis = seqMis - 1;
     } else {
         pkt->xMis = -1;
         pkt->yMis = -1;
