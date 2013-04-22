@@ -70,7 +70,7 @@ SOFTWARE.
 #define KEEPLIVE_TIMEOUT 5000
 
 /* Score */
-#define INIT_SCORE 42
+#define INIT_SCORE 1 
 #define MISSILE_FIRE_SCORE (-1)
 #define MISSILE_KILLER_SCORE 11
 #define MISSILE_VICTIM_SCORE (-5)
@@ -355,6 +355,12 @@ public:
     inline std::vector<infoMis>& trackedMissile(){
         return trackedMissile_;
     }
+    inline uint8_t seqActiveMissile() const {
+        return seqActiveMissile_;
+    }
+    void seqActiveMissileIs(uint8_t seqActiveMissile) {
+        this->seqActiveMissile_ = seqActiveMissile;
+    }
 
     void lastHeartbeatIs() {
         gettimeofday(&(this->lastHeartbeat_),NULL);
@@ -400,6 +406,7 @@ protected:
     Loc yMissile_;
     Direction dirMissile_;
     bool hasMissile_;
+    uint8_t seqActiveMissile_;
     timeval updateMissile_;
     std::vector<infoMis> trackedMissile_;
 

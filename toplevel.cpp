@@ -431,10 +431,10 @@ void shoot()
     M->yMissileIs(MY_Y_LOC);
     M->dirMissileIs(MY_DIR);
     M->updateMissileIs(cur);
-
+    M->seqActiveMissileIs(seqMis++);
     /* tracked missile, used to ack killed */
     infoMis info;
-    info.seqMis = seqMis++;
+    info.seqMis = M->seqActiveMissile();
     info.registeredKill = false;
     info.victimId = 0;
     std::vector<infoMis> &infos = M->trackedMissile();
@@ -545,13 +545,21 @@ void resolveConflictPosition()
     int step, dist, direction;
     int newx = MY_X_LOC;
     int newy = MY_Y_LOC;
+    bool isConflict = false;
     Rat r;
-    if(!stateChanged || !isConflictPosition(Loc(MY_X_LOC), Loc(MY_Y_LOC))) {
-        stateChanged = false;
+    if(!stateChanged) {
         return;
     }
+    for(int index = 1; index < MAX_RATS; index++) {
+        r = M->rat(index);
+        if(r.playing && M->myRatId().value() < r.id.value() &&
+                (r.x.value() == newx && r.y.value() == newy)) {
+            isConflict = true;
+            break;
+        }
+    }
     step = 0;
-    while(true) {
+    while(isConflict) {
         newx = MY_X_LOC;
         newy = MY_Y_LOC;
         dist = step / 4 + 1;
@@ -572,11 +580,14 @@ void resolveConflictPosition()
         default:
             MWError("Invalid direction");
         }
+        if(DEBUG) printf("Resovling: x,y,dist=%d,%d,%d\n", newx, newy, dist);
         /* Check if is valid maze cell */
         if(newx < 0 || newx >= MAZEXMAX || newy < 0 || newy >= MAZEYMAX) {
+            step++;
             continue;
         }
-        if (!M->maze_[newx][newy]) {
+        if (M->maze_[newx][newy]) {
+            step++;
             continue;
         }
         /* Check aganist all rats with higher ID */
@@ -584,16 +595,17 @@ void resolveConflictPosition()
             r = M->rat(index);
             if(r.playing && M->myRatId().value() < r.id.value() &&
                     (r.x.value() == newx && r.y.value() == newy)) {
-                dist++;
+                step++;
                 continue;
             }
         }
-        break;
+        isConflict = false;
     }
 
     M->xlocIs(newx);
     M->ylocIs(newy);
     stateChanged = false;
+    updateView = TRUE;
 }
 
 /* ----------------------------------------------------------------------- */
@@ -839,7 +851,6 @@ void processHeartbeat(heartbeat *hb)
                 if(old.score.value() != r.score.value()) {
                     UpdateScoreCard(iold);
                 }
-                //printf("[%X] score=%d\n", r.id.value(), r.score.value());
             }
         } else {
             /* from new player */
@@ -939,6 +950,10 @@ void processKilled(killed *pkt)
                     it->seqMis = pkt->seqMis;
                     M->scoreIs( M->score().value() + MISSILE_KILLER_SCORE);
                     UpdateScoreCard(MY_RAT_INDEX);
+                    if(it->seqMis==M->seqActiveMissile()){
+                        M->hasMissileIs(false);
+                        clearSquare(Loc(MY_X_MIS), Loc(MY_Y_MIS));
+                    }
                 }
                 killConfirmed *pkt =
                     (killConfirmed *)packetFactory::createPacket(TYPE_KILLCONFIRMED);

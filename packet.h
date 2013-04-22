@@ -90,7 +90,7 @@ public:
     int8_t yMis;
     uint8_t seqMis;
     uint8_t dir;
-    uint16_t score;
+    int16_t score;
 
     bool hasMissile() {
         return (xMis >= 0 && yMis >= 0);

@@ -1,2 +1,3 @@
 -command line argument
-
+-tested position resolution(by disabling position check in forward)
++ test packet loss
