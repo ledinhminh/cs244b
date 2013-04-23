@@ -218,6 +218,7 @@ public:
         mazePacket::deserialize(buf, size);
         memcpy(name, buf + offset, sizeof(name));
         offset += sizeof(name);
+        name[MAX_RAT_NAME-1]='\0';
     }
 };
 

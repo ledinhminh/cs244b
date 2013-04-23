@@ -5,7 +5,6 @@
  *  DESCR:
  */
 
-#define DEBUG 1
 
 #include "main.h"
 #include <string>
@@ -532,6 +531,7 @@ void clearGhostRats()
         r = M->rat(index);
         if(r.playing && checkTimeout(r.lastHeartbeat, KEEPLIVE_TIMEOUT)) {
             r.playing = false;
+            M->ratIs(r, index);
             UpdateScoreCard(index);
         }
     }
@@ -708,6 +708,13 @@ void DoViewUpdate()
 
 void sendPacket(mazePacket *pack)
 {
+    if(DEBUG) {
+        float rate = (float)rand() / (float)RAND_MAX;
+        if(rate < PACKET_DROP_RATE) {
+            delete pack;
+            return;
+        }
+    }
     uint8_t buf[64];
     memset(buf, 0, sizeof(64));
     pack->serialize(buf, sizeof(buf));
@@ -851,6 +858,14 @@ void processHeartbeat(heartbeat *hb)
                 if(old.score.value() != r.score.value()) {
                     UpdateScoreCard(iold);
                 }
+                if(r.name.compare("")==0) {
+                    nameRequest *pkt =
+                        (nameRequest *)packetFactory::createPacket(TYPE_NAME_REQUEST);
+                    pkt->id = M->myRatId().value();
+                    pkt->seqNum = seqNum++;
+                    pkt->targetId = r.id.value();
+                    sendPacket(pkt);
+                }
             }
         } else {
             /* from new player */
@@ -876,7 +891,7 @@ void processHeartbeat(heartbeat *hb)
                     nr.yMis = Loc(hb->yMis);
                     nr.seqMis = hb->seqMis;
                 }
-                r.updateHeartbeat();
+                nr.updateHeartbeat();
                 M->ratIs(nr, index);
                 stateChanged = true;
                 printf("new player[%d]=%X\n", index, nr.id.value());
@@ -916,12 +931,13 @@ void processNameResponse(nameResponse *pkt)
     printf("[%X]res from %X\n", M->myRatId().value(), pkt->id);
     RatIndexType index = getRatIndexById(RatId(pkt->id));
     if(index == MAX_RATS) {
-        MWError("Name response from unknown client.");
+        if(DEBUG) printf("Name response from unknown client.");
     } else {
         Rat r = M->rat(index);
         r.name = string(pkt->name);
         M->ratIs(r, index);
         UpdateScoreCard(index);
+        if(DEBUG) cout << r.name << "]" << endl;
     }
 }
 
@@ -950,7 +966,7 @@ void processKilled(killed *pkt)
                     it->seqMis = pkt->seqMis;
                     M->scoreIs( M->score().value() + MISSILE_KILLER_SCORE);
                     UpdateScoreCard(MY_RAT_INDEX);
-                    if(it->seqMis==M->seqActiveMissile()){
+                    if(it->seqMis == M->seqActiveMissile()) {
                         M->hasMissileIs(false);
                         clearSquare(Loc(MY_X_MIS), Loc(MY_Y_MIS));
                     }
@@ -1092,7 +1108,7 @@ netInit()
 
     /* set up some stuff strictly for this local sample */
     M->myRatIdIs(0x12345678);
-    M->scoreIs(42);
+    M->scoreIs(0);
     SetMyRatIndexType(0);
 
     /* Get the multi-cast address ready to use in SendData()

@@ -56,11 +56,14 @@ SOFTWARE.
 #include <stdlib.h>
 
 /* fundamental constants */
-
 #ifndef	TRUE
 #define	TRUE		1
 #define	FALSE		0
 #endif	/* TRUE */
+
+/* DEBUG */
+#define DEBUG 1
+#define PACKET_DROP_RATE (0)
 
 /* Timeouts(ms) */
 #define JOIN_TIMEOUT 2000
@@ -70,7 +73,7 @@ SOFTWARE.
 #define KEEPLIVE_TIMEOUT 5000
 
 /* Score */
-#define INIT_SCORE 1 
+#define INIT_SCORE 0 
 #define MISSILE_FIRE_SCORE (-1)
 #define MISSILE_KILLER_SCORE 11
 #define MISSILE_VICTIM_SCORE (-5)
@@ -153,7 +156,7 @@ class Loc : public Ordinal<Loc, short> {
 public:
     Loc(short num) : Ordinal<Loc, short>(num) {
         if(num < 0) {
-            throw RangeException("Error: Unexpected negative value.\n");
+            //throw RangeException("Error: Unexpected negative value.\n");
         }
     }
 };
@@ -200,7 +203,7 @@ class Rat {
 public:
     Rat() :  playing(0), x(1), y(1), dir(NORTH),
     xMis(0), yMis(0), hasMissile(false), 
-    score(0), name("other"), id(0), seqNum(0), seqMis(0) {};
+    score(0), name(""), id(0), seqNum(0), seqMis(0) {};
     bool playing;
     Loc	x, y;
     Direction dir;
@@ -214,7 +217,7 @@ public:
     timeval lastHeartbeat;
 
     void updateHeartbeat(){
-        gettimeofday(&lastHeartbeat, NULL);
+        gettimeofday(&(this->lastHeartbeat), NULL);
     }
 };
 
