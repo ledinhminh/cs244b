@@ -263,7 +263,7 @@ forward(void)
         MWError("bad direction in Forward");
     }
     if(isConflictPosition(Loc(tx), Loc(ty))) {
-        printf("forward aborted\n");
+        if(DEBUG) printf("forward aborted\n");
         return;
     }
     if ((MY_X_LOC != tx) || (MY_Y_LOC != ty)) {
@@ -297,7 +297,7 @@ void backward()
         MWError("bad direction in Backward");
     }
     if(isConflictPosition(Loc(tx), Loc(ty))) {
-        printf("backward aborted\n");
+        if(DEBUG) printf("backward aborted\n");
         return;
     }
     if ((MY_X_LOC != tx) || (MY_Y_LOC != ty)) {
@@ -533,6 +533,7 @@ void clearGhostRats()
             r.playing = false;
             M->ratIs(r, index);
             UpdateScoreCard(index);
+            updateView = TRUE;
         }
     }
 }
@@ -788,35 +789,35 @@ void processPacket (MWEvent *eventPacket)
     case TYPE_NAME_REQUEST: {
         nameRequest pkt;
         pkt.deserialize(payload, size);
-        std::cout << "name request" << endl;
+        if(DEBUG) std::cout << "name request" << endl;
         processNameRequest(&pkt);
     }
     break;
     case TYPE_NAME_RESPONSE: {
         nameResponse pkt;
         pkt.deserialize(payload, size);
-        std::cout << "name response" << endl;
+        if(DEBUG) std::cout << "name response" << endl;
         processNameResponse(&pkt);
     }
     break;
     case TYPE_KILLED: {
         killed pkt;
         pkt.deserialize(payload, size);
-        std::cout << "killed" << endl;
+        if(DEBUG) std::cout << "killed" << endl;
         processKilled(&pkt);
     }
     break;
     case TYPE_KILLCONFIRMED: {
         killConfirmed pkt;
         pkt.deserialize(payload, size);
-        std::cout << "killConfirmed" << endl;
+        if(DEBUG) std::cout << "killConfirmed" << endl;
         processKillConfirmed(&pkt);
     }
     break;
     case TYPE_LEAVE: {
         leave pkt;
         pkt.deserialize(payload, size);
-        std::cout << "leave" << endl;
+        if(DEBUG) std::cout << "leave" << endl;
         processLeave(&pkt);
     }
     break;
@@ -894,7 +895,7 @@ void processHeartbeat(heartbeat *hb)
                 nr.updateHeartbeat();
                 M->ratIs(nr, index);
                 stateChanged = true;
-                printf("new player[%d]=%X\n", index, nr.id.value());
+                if(DEBUG) printf("new player[%d]=%X\n", index, nr.id.value());
                 /* Get name new player name */
                 nameRequest *pkt =
                     (nameRequest *)packetFactory::createPacket(TYPE_NAME_REQUEST);
@@ -919,7 +920,7 @@ void processNameRequest(nameRequest *pkt)
         const char *name = GetRatName(MY_RAT_INDEX);
         memcpy(pkt->name, name, strlen(name) + 1);
         sendPacket(pkt);
-        printf("[%X]sending res\n", pkt->id);
+        if(DEBUG) printf("[%X]sending res\n", pkt->id);
     }
 }
 
@@ -928,7 +929,7 @@ void processNameResponse(nameResponse *pkt)
     if(pkt->id == M->myRatId().value()) {
         return;
     }
-    printf("[%X]res from %X\n", M->myRatId().value(), pkt->id);
+    if(DEBUG) printf("[%X]res from %X\n", M->myRatId().value(), pkt->id);
     RatIndexType index = getRatIndexById(RatId(pkt->id));
     if(index == MAX_RATS) {
         if(DEBUG) printf("Name response from unknown client.");
@@ -937,7 +938,6 @@ void processNameResponse(nameResponse *pkt)
         r.name = string(pkt->name);
         M->ratIs(r, index);
         UpdateScoreCard(index);
-        if(DEBUG) cout << r.name << "]" << endl;
     }
 }
 
@@ -948,7 +948,7 @@ void processKilled(killed *pkt)
     }
     RatIndexType index = getRatIndexById(RatId(pkt->id));
     if(index == MAX_RATS) {
-        MWError("Name response from unknown client.");
+        if(DEBUG) printf("Name response from unknown client.");
     } else {
         Rat r = M->rat(index);
         if(r.seqNum >= pkt->seqNum) {
@@ -1099,10 +1099,6 @@ netInit()
                    &mreq, sizeof(mreq)) < 0) {
         MWError("setsockopt failed (IP_ADD_MEMBERSHIP)");
     }
-
-    /*
-     * Now we can try to find a game to join; if none, start one.
-     */
 
     printf("\n");
 

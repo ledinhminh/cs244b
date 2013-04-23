@@ -62,8 +62,8 @@ SOFTWARE.
 #endif	/* TRUE */
 
 /* DEBUG */
-#define DEBUG 1
-#define PACKET_DROP_RATE (0)
+#define DEBUG 0
+#define PACKET_DROP_RATE (0.5)
 
 /* Timeouts(ms) */
 #define JOIN_TIMEOUT 2000
