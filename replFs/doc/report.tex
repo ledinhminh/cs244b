@@ -226,8 +226,18 @@ It must be different for the two files that are opened back-to-back.
 It's up to the client implementation to assign a File ID for every OpenFile call.
 In general, this can be incremented at each new call or randomly generated.
 File ID reusing is discouraged in order to prevent confusion caused by packet delay.
-If a packet with a File ID that does not match the current file under operation,
-that packet must be ignored.
+
+\subsection{Client/Server inconsistency}
+There are multiple calls that do not require Server responses, 
+which introduces inconsistency during packet loss.
+\begin{itemize}
+    \item WriteBlock(): Since WriteBlock request can be lost, 
+        server might have fewer blocks.
+        We use the block list in CommitPrepare packet to ensure consistency.
+    \item Abort(): Since Abort request can be lost, 
+        server might have extra blocks.
+        We use the block list in CommitPrepare packet to ensure consistency.
+\end{itemize}
 
 \subsection{Operation flow}
 \begin{itemize}
