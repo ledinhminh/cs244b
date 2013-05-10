@@ -1,9 +1,9 @@
-/****************/
-/* Your Name	*/
-/* Date		*/
-/* CS 244B	*/
-/* Spring 2013	*/
-/****************/
+/************************/
+/* Your Name: Wei Shi   */
+/* Date: May 9, 2013    */
+/* CS 244B              */
+/* Spring 2013          */
+/************************/
 
 #define DEBUG
 
@@ -15,96 +15,115 @@
 #include <assert.h>
 
 #include <client.h>
+#include <packet.h>
+#include <iostream>
+#include <iomanip>
 
 /* ------------------------------------------------------------------ */
 
 int
-InitReplFs( unsigned short portNum, int packetLoss, int numServers ) {
+InitReplFs( unsigned short portNum, int packetLoss, int numServers )
+{
 #ifdef DEBUG
-  printf( "InitReplFs: Port number %d, packet loss %d percent, %d servers\n", 
-	  portNum, packetLoss, numServers );
+    printf( "InitReplFs: Port number %d, packet loss %d percent, %d servers\n",
+            portNum, packetLoss, numServers );
 #endif
+    std::stringstream sink;
+    PacketCommit cp;
+    cp.id = 1;
+    cp.seqNum = 42;
+    cp.fileID = 37;
+    cp.serialize(sink);
 
-  /****************************************************/
-  /* Initialize network access, local state, etc.     */
-  /****************************************************/
+    for (std::string::size_type i = 0; i < sink.str().length(); ++i) {
+        std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)sink.str()[i];
+    }
+    std::cout << std::endl;
 
-  return( NormalReturn );  
+
+    /****************************************************/
+    /* Initialize network access, local state, etc.     */
+    /****************************************************/
+    return -1;
+    return( NormalReturn );
 }
 
 /* ------------------------------------------------------------------ */
 
 int
-OpenFile( char * fileName ) {
-  int fd;
+OpenFile( char *fileName )
+{
+    int fd;
 
-  ASSERT( fileName );
-
-#ifdef DEBUG
-  printf( "OpenFile: Opening File '%s'\n", fileName );
-#endif
-
-  fd = open( fileName, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR );
+    ASSERT( fileName );
 
 #ifdef DEBUG
-  if ( fd < 0 )
-    perror( "OpenFile" );
+    printf( "OpenFile: Opening File '%s'\n", fileName );
 #endif
 
-  return( fd );
+    fd = open( fileName, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR );
+
+#ifdef DEBUG
+    if ( fd < 0 )
+        perror( "OpenFile" );
+#endif
+
+    return( fd );
 }
 
 /* ------------------------------------------------------------------ */
 
 int
-WriteBlock( int fd, char * buffer, int byteOffset, int blockSize ) {
-  //char strError[64];
-  int bytesWritten;
+WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
+{
+    //char strError[64];
+    int bytesWritten;
 
-  ASSERT( fd >= 0 );
-  ASSERT( byteOffset >= 0 );
-  ASSERT( buffer );
-  ASSERT( blockSize >= 0 && blockSize < MaxBlockLength );
+    ASSERT( fd >= 0 );
+    ASSERT( byteOffset >= 0 );
+    ASSERT( buffer );
+    ASSERT( blockSize >= 0 && blockSize < MaxBlockLength );
 
 #ifdef DEBUG
-  printf( "WriteBlock: Writing FD=%d, Offset=%d, Length=%d\n",
-	fd, byteOffset, blockSize );
+    printf( "WriteBlock: Writing FD=%d, Offset=%d, Length=%d\n",
+            fd, byteOffset, blockSize );
 #endif
 
-  if ( lseek( fd, byteOffset, SEEK_SET ) < 0 ) {
-    perror( "WriteBlock Seek" );
-    return(ErrorReturn);
-  }
+    if ( lseek( fd, byteOffset, SEEK_SET ) < 0 ) {
+        perror( "WriteBlock Seek" );
+        return(ErrorReturn);
+    }
 
-  if ( ( bytesWritten = write( fd, buffer, blockSize ) ) < 0 ) {
-    perror( "WriteBlock write" );
-    return(ErrorReturn);
-  }
+    if ( ( bytesWritten = write( fd, buffer, blockSize ) ) < 0 ) {
+        perror( "WriteBlock write" );
+        return(ErrorReturn);
+    }
 
-  return( bytesWritten );
+    return( bytesWritten );
 
 }
 
 /* ------------------------------------------------------------------ */
 
 int
-Commit( int fd ) {
-  ASSERT( fd >= 0 );
+Commit( int fd )
+{
+    ASSERT( fd >= 0 );
 
 #ifdef DEBUG
-  printf( "Commit: FD=%d\n", fd );
+    printf( "Commit: FD=%d\n", fd );
 #endif
 
-	/****************************************************/
-	/* Prepare to Commit Phase			    */
-	/* - Check that all writes made it to the server(s) */
-	/****************************************************/
+    /****************************************************/
+    /* Prepare to Commit Phase			    */
+    /* - Check that all writes made it to the server(s) */
+    /****************************************************/
 
-	/****************/
-	/* Commit Phase */
-	/****************/
+    /****************/
+    /* Commit Phase */
+    /****************/
 
-  return( NormalReturn );
+    return( NormalReturn );
 
 }
 
@@ -113,40 +132,41 @@ Commit( int fd ) {
 int
 Abort( int fd )
 {
-  ASSERT( fd >= 0 );
+    ASSERT( fd >= 0 );
 
 #ifdef DEBUG
-  printf( "Abort: FD=%d\n", fd );
+    printf( "Abort: FD=%d\n", fd );
 #endif
 
-  /*************************/
-  /* Abort the transaction */
-  /*************************/
+    /*************************/
+    /* Abort the transaction */
+    /*************************/
 
-  return(NormalReturn);
+    return(NormalReturn);
 }
 
 /* ------------------------------------------------------------------ */
 
 int
-CloseFile( int fd ) {
+CloseFile( int fd )
+{
 
-  ASSERT( fd >= 0 );
+    ASSERT( fd >= 0 );
 
 #ifdef DEBUG
-  printf( "Close: FD=%d\n", fd );
+    printf( "Close: FD=%d\n", fd );
 #endif
 
-	/*****************************/
-	/* Check for Commit or Abort */
-	/*****************************/
+    /*****************************/
+    /* Check for Commit or Abort */
+    /*****************************/
 
-  if ( close( fd ) < 0 ) {
-    perror("Close");
-    return(ErrorReturn);
-  }
+    if ( close( fd ) < 0 ) {
+        perror("Close");
+        return(ErrorReturn);
+    }
 
-  return(NormalReturn);
+    return(NormalReturn);
 }
 
 /* ------------------------------------------------------------------ */

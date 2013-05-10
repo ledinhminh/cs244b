@@ -19,7 +19,9 @@
 #define TYPE_CLIENT 0
 #define TYPE_SERVER 1
 
-#define MAX_FILENAME_SIZE 128
+#define MAX_FILENAME_SIZE   128
+#define MAX_NUM_BLOCK       128
+#define MAX_BLOCK_SIZE      512
 
 struct Packet {
     uint8_t type;
@@ -54,6 +56,19 @@ public:
         sink.write(reinterpret_cast<char *>(&p.fileID), sizeof(uint32_t));
     }
 
+    virtual void deserialize(std::istream &source) {
+        source.read(reinterpret_cast<char *>(&opCode),  sizeof(uint8_t));
+        source.read(reinterpret_cast<char *>(&zero),    sizeof(uint8_t));
+        source.read(reinterpret_cast<char *>(&version), sizeof(uint8_t));
+        source.read(reinterpret_cast<char *>(&type),    sizeof(uint8_t));
+        source.read(reinterpret_cast<char *>(&id),      sizeof(uint32_t));
+        source.read(reinterpret_cast<char *>(&seqNum),  sizeof(uint32_t));
+        source.read(reinterpret_cast<char *>(&fileID),  sizeof(uint32_t));
+        id = ntohl(id);
+        seqNum = ntohl(seqNum);
+        fileID = ntohl(fileID);
+    }
+
 };
 
 class PacketOpenFile: public PacketHeader {
@@ -67,6 +82,11 @@ public:
     virtual void serialize(std::ostream &sink) {
         PacketHeader::serialize(sink);
         sink.write(reinterpret_cast<char *>(&filename), sizeof(filename));
+    }
+    virtual void deserialize(std::istream &source) {
+        PacketHeader::deserialize(source);
+        source.read(reinterpret_cast<char *>(&filename), sizeof(filename));
+        filename[MAX_FILENAME_SIZE - 1] = '\0';
     }
 };
 
@@ -82,6 +102,11 @@ public:
         PacketHeader::serialize(sink);
         sink.write(reinterpret_cast<char *>(&status), sizeof(uint8_t));
     }
+
+    virtual void deserialize(std::istream &source) {
+        PacketHeader::deserialize(source);
+        source.read(reinterpret_cast<char *>(&status),  sizeof(uint8_t));
+    }
 };
 
 class PacketWriteBlock: public PacketHeader {
@@ -90,7 +115,7 @@ public:
         opCode = OPCODE_WRITEBLOCK;
         type = TYPE_CLIENT;
     }
-    
+
     /* Copy constructor to handle payload clone */
     PacketWriteBlock(const PacketWriteBlock &other) : PacketHeader(other) {
         blockID = other.blockID;
@@ -110,10 +135,23 @@ public:
         p.blockID = htonl(blockID);
         p.offset = htonl(offset);
         p.size = htonl(size);
+        ASSERT(size <= MAX_BLOCK_SIZE);
         sink.write(reinterpret_cast<char *>(&p.blockID), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.offset), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.size), sizeof(uint32_t));
         sink << payload.rdbuf();
+    }
+
+    virtual void deserialize(std::istream &source) {
+        PacketHeader::deserialize(source);
+        source.read(reinterpret_cast<char *>(&blockID), sizeof(uint32_t));
+        source.read(reinterpret_cast<char *>(&offset),  sizeof(uint32_t));
+        source.read(reinterpret_cast<char *>(&size),    sizeof(uint32_t));
+        payload << source.rdbuf();
+        blockID = ntohl(blockID);
+        offset = ntohl(offset);
+        size = ntohl(size);
+        ASSERT(size <= MAX_BLOCK_SIZE);
     }
 };
 
@@ -130,12 +168,25 @@ public:
     virtual void serialize(std::ostream &sink) {
         PacketHeader::serialize(sink);
         PacketCommitPrepare p(*this);
-        p.numBlocks = htonl(numBlocks);
+        p.numBlocks = htonl(blockIDs.size());
+        ASSERT(blockIDs.size() <= MAX_NUM_BLOCKS);
         sink.write(reinterpret_cast<char *>(&p.numBlocks), sizeof(uint32_t));
         std::vector<uint32_t>::iterator it;
         for(it = blockIDs.begin(); it != blockIDs.end(); ++it) {
             uint32_t bid = htonl(*it);
             sink.write(reinterpret_cast<char *>(&bid), sizeof(uint32_t));
+        }
+    }
+
+    virtual void deserialize(std::istream &source) {
+        PacketHeader::deserialize(source);
+        source.read(reinterpret_cast<char *>(&numBlocks), sizeof(uint32_t));
+        numBlocks = ntohl(numBlocks);
+        ASSERT(numBlocks <= MAX_NUM_BLOCKS);
+        for(unsigned int i = 0; i < numBlocks; i++) {
+            uint32_t bid;
+            source.read(reinterpret_cast<char *>(&bid),  sizeof(uint32_t));
+            blockIDs.push_back(ntohl(bid));
         }
     }
 };
