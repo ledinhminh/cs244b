@@ -24,7 +24,7 @@ $(C_DIR)/libclientReplFs.a:	$(CLIENT_OBJECTS)
 	ar cr libclientReplFs.a $(CLIENT_OBJECTS)
 	ranlib libclientReplFs.a
 
-client.o:	client.c client.h packet.h
+client.o:	client.c client.h network.cpp network.h packet.h
 	$(CCF) -c $(INCDIR) client.c
 
 clean:

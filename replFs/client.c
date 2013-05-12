@@ -19,6 +19,10 @@
 #include <iostream>
 #include <iomanip>
 
+#include "network.h"
+
+static NetworkInstance N(FS_PORT, FS_GROUP);
+
 /* ------------------------------------------------------------------ */
 
 int
@@ -55,7 +59,7 @@ OpenFile( char *fileName )
 {
     int fd;
 
-    ASSERT( fileName );
+    assert( fileName );
 
 #ifdef DEBUG
     printf( "OpenFile: Opening File '%s'\n", fileName );
@@ -79,10 +83,10 @@ WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
     //char strError[64];
     int bytesWritten;
 
-    ASSERT( fd >= 0 );
-    ASSERT( byteOffset >= 0 );
-    ASSERT( buffer );
-    ASSERT( blockSize >= 0 && blockSize < MaxBlockLength );
+    assert( fd >= 0 );
+    assert( byteOffset >= 0 );
+    assert( buffer );
+    assert( blockSize >= 0 && blockSize < MAX_BLOCK_SIZE );
 
 #ifdef DEBUG
     printf( "WriteBlock: Writing FD=%d, Offset=%d, Length=%d\n",
@@ -108,7 +112,7 @@ WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
 int
 Commit( int fd )
 {
-    ASSERT( fd >= 0 );
+    assert( fd >= 0 );
 
 #ifdef DEBUG
     printf( "Commit: FD=%d\n", fd );
@@ -132,7 +136,7 @@ Commit( int fd )
 int
 Abort( int fd )
 {
-    ASSERT( fd >= 0 );
+    assert( fd >= 0 );
 
 #ifdef DEBUG
     printf( "Abort: FD=%d\n", fd );
@@ -151,7 +155,7 @@ int
 CloseFile( int fd )
 {
 
-    ASSERT( fd >= 0 );
+    assert( fd >= 0 );
 
 #ifdef DEBUG
     printf( "Close: FD=%d\n", fd );

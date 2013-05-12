@@ -1,24 +1,19 @@
-/****************/
-/* Your Name	*/
-/* Date		*/
-/* CS 244B	*/
-/* Spring 2013	*/
-/****************/
+/************************/
+/* Your Name: Wei Shi   */
+/* Date: May 9, 2013    */
+/* CS 244B              */
+/* Spring 2013          */
+/************************/
+
+#define FS_PORT 40010
+#define FS_GROUP 0xe0010101
 
 enum {
   NormalReturn = 0,
   ErrorReturn = -1,
 };
 
-/* ------------------------------------------------------------------ */
 
-#ifdef ASSERT_DEBUG
-#define ASSERT(ASSERTION) \
- { assert(ASSERTION); }
-#else
-#define ASSERT(ASSERTION) \
-{ }
-#endif
 
 /* ------------------------------------------------------------------ */
 

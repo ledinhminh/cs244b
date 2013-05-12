@@ -1,6 +1,9 @@
 #ifndef PACKET_H
 #define PACKET_H
 
+//#debug NDEBUG
+
+#include <assert.h>
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sstream>
@@ -20,7 +23,7 @@
 #define TYPE_SERVER 1
 
 #define MAX_FILENAME_SIZE   128
-#define MAX_NUM_BLOCK       128
+#define MAX_NUM_BLOCKS      128
 #define MAX_BLOCK_SIZE      512
 
 struct Packet {
@@ -135,7 +138,7 @@ public:
         p.blockID = htonl(blockID);
         p.offset = htonl(offset);
         p.size = htonl(size);
-        ASSERT(size <= MAX_BLOCK_SIZE);
+        assert(size <= MAX_BLOCK_SIZE);
         sink.write(reinterpret_cast<char *>(&p.blockID), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.offset), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.size), sizeof(uint32_t));
@@ -151,7 +154,7 @@ public:
         blockID = ntohl(blockID);
         offset = ntohl(offset);
         size = ntohl(size);
-        ASSERT(size <= MAX_BLOCK_SIZE);
+        assert(size <= MAX_BLOCK_SIZE);
     }
 };
 
@@ -169,7 +172,7 @@ public:
         PacketHeader::serialize(sink);
         PacketCommitPrepare p(*this);
         p.numBlocks = htonl(blockIDs.size());
-        ASSERT(blockIDs.size() <= MAX_NUM_BLOCKS);
+        assert(blockIDs.size() <= MAX_NUM_BLOCKS);
         sink.write(reinterpret_cast<char *>(&p.numBlocks), sizeof(uint32_t));
         std::vector<uint32_t>::iterator it;
         for(it = blockIDs.begin(); it != blockIDs.end(); ++it) {
@@ -182,7 +185,7 @@ public:
         PacketHeader::deserialize(source);
         source.read(reinterpret_cast<char *>(&numBlocks), sizeof(uint32_t));
         numBlocks = ntohl(numBlocks);
-        ASSERT(numBlocks <= MAX_NUM_BLOCKS);
+        assert(numBlocks <= MAX_NUM_BLOCKS);
         for(unsigned int i = 0; i < numBlocks; i++) {
             uint32_t bid;
             source.read(reinterpret_cast<char *>(&bid),  sizeof(uint32_t));
