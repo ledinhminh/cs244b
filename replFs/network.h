@@ -1,13 +1,18 @@
 #include "strings.h"
 #include "stdlib.h"
-#include <sys/socket.h>
+#include "string.h"
+#include <errno.h>
 #include <netdb.h>
+#include <fcntl.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 
 #include "exception.h"
 #include "packet.h"
+
+#define FS_GROUP 0xE0010101
 
 class NetworkInstance {
 private:
@@ -28,9 +33,10 @@ public:
         id = rand();
         seqNum = 0;
     };
-    int send(PacketBase &p);
-    int recv(std::istream &s);
+    void send(PacketBase &p);
+    int recv(PacketBase &p);
 private:
     void initSocket();
+    bool isDropped();
     sockaddr_in *resolveHost(register char *name);
 };

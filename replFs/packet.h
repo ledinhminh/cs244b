@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sstream>
+#include <iostream>
+#include <iomanip>
 #include <vector>
 
 #define OPCODE_OPENFILE     0x0
@@ -32,6 +34,18 @@ public:
         zero = 0;
         version = 0;
     };
+
+    PacketBase(const PacketBase &other) {
+        opCode = other.opCode;
+        zero = other.zero;
+        version = other.version;
+        type = other.type;
+        id = other.id;
+        seqNum = other.seqNum;
+        fileID = other.fileID;
+        buf << other.buf.rdbuf();
+    }
+
     uint8_t opCode;
     uint8_t zero;
     uint8_t version;
@@ -39,6 +53,8 @@ public:
     uint32_t id;
     uint32_t seqNum;
     uint32_t fileID;
+
+    std::stringstream buf;
 
     virtual void serialize(std::ostream &sink) {
         PacketBase p(*this);
@@ -55,6 +71,7 @@ public:
     }
 
     virtual void deserialize(std::istream &source) {
+        buf << source.rdbuf();
         source.read(reinterpret_cast<char *>(&opCode),  sizeof(uint8_t));
         source.read(reinterpret_cast<char *>(&zero),    sizeof(uint8_t));
         source.read(reinterpret_cast<char *>(&version), sizeof(uint8_t));
@@ -65,6 +82,14 @@ public:
         id = ntohl(id);
         seqNum = ntohl(seqNum);
         fileID = ntohl(fileID);
+    }
+
+    void print() {
+        for (std::string::size_type i = 0; i < buf.str().length(); ++i) {
+            std::cout << std::hex << std::setfill('0') << std::setw(2)
+                      << (int)buf.str()[i];
+        }
+        std::cout << std::endl;
     }
 
 };

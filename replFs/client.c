@@ -31,24 +31,7 @@ InitReplFs( unsigned short portNum, int packetLoss, int numServers )
     printf( "InitReplFs: Port number %d, packet loss %d percent, %d servers\n",
             portNum, packetLoss, numServers );
 #endif
-    C=new ClientInstance(FS_PORT, FS_GROUP, packetLoss);
-    std::stringstream sink;
-    PacketCommit cp;
-    cp.id = 1;
-    cp.seqNum = 42;
-    cp.fileID = 37;
-    cp.serialize(sink);
-
-    for (std::string::size_type i = 0; i < sink.str().length(); ++i) {
-        std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)sink.str()[i];
-    }
-    std::cout << std::endl;
-
-
-    /****************************************************/
-    /* Initialize network access, local state, etc.     */
-    /****************************************************/
-    return -1;
+    C = new ClientInstance(FS_PORT, FS_GROUP, packetLoss, numServers);
     return( NormalReturn );
 }
 
@@ -57,22 +40,14 @@ InitReplFs( unsigned short portNum, int packetLoss, int numServers )
 int
 OpenFile( char *fileName )
 {
-    int fd;
-
     assert( fileName );
 
 #ifdef DEBUG
     printf( "OpenFile: Opening File '%s'\n", fileName );
 #endif
 
-    fd = open( fileName, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR );
-
-#ifdef DEBUG
-    if ( fd < 0 )
-        perror( "OpenFile" );
-#endif
-
-    return( fd );
+    return C->openFile(fileName);
+//    fd = open( fileName, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR );
 }
 
 /* ------------------------------------------------------------------ */
@@ -80,9 +55,6 @@ OpenFile( char *fileName )
 int
 WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
 {
-    //char strError[64];
-    int bytesWritten;
-
     assert( fd >= 0 );
     assert( byteOffset >= 0 );
     assert( buffer );
@@ -92,7 +64,8 @@ WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
     printf( "WriteBlock: Writing FD=%d, Offset=%d, Length=%d\n",
             fd, byteOffset, blockSize );
 #endif
-
+    return C->writeBlock(fd, buffer, byteOffset, blockSize);
+    /*
     if ( lseek( fd, byteOffset, SEEK_SET ) < 0 ) {
         perror( "WriteBlock Seek" );
         return(ErrorReturn);
@@ -104,7 +77,7 @@ WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
     }
 
     return( bytesWritten );
-
+    */
 }
 
 /* ------------------------------------------------------------------ */
@@ -117,17 +90,7 @@ Commit( int fd )
 #ifdef DEBUG
     printf( "Commit: FD=%d\n", fd );
 #endif
-
-    /****************************************************/
-    /* Prepare to Commit Phase			    */
-    /* - Check that all writes made it to the server(s) */
-    /****************************************************/
-
-    /****************/
-    /* Commit Phase */
-    /****************/
-
-    return( NormalReturn );
+    return C->commit(fd);
 
 }
 
@@ -146,7 +109,7 @@ Abort( int fd )
     /* Abort the transaction */
     /*************************/
 
-    return(NormalReturn);
+    return C->abort(fd);
 }
 
 /* ------------------------------------------------------------------ */
@@ -164,13 +127,15 @@ CloseFile( int fd )
     /*****************************/
     /* Check for Commit or Abort */
     /*****************************/
-
+    return C->closeFile(fd);
+    /*
     if ( close( fd ) < 0 ) {
         perror("Close");
         return(ErrorReturn);
     }
 
     return(NormalReturn);
+    */
 }
 
 /* ------------------------------------------------------------------ */

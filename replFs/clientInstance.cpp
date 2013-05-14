@@ -12,12 +12,22 @@ int ClientInstance::openFile(char *strFileName)
     setCurrentTime(&timeOpenFile);
 
     /* Wait for response */
+    std::set<uint32_t> servers;
     while(!isTimeout(timeOpenFile, OPENFILE_TIMEOUT)) {
-        std::stringstream source;
-        N->recv(source);
+        PacketBase pb;
+        N->recv(pb);
+        /* Only handle OpenFileAck */
+        if(pb.opCode == OPCODE_OPENFILEACK) {
+            PacketOpenFile pof;
+            pof.deserialize(pb.buf);
+            servers.insert(pof.id);
+            if(servers.size() >= numServers) {
+                fileOpened = true;
+                return ++curFd;
+            }
+        }
     }
-    fileOpened = true;
-    return ++curFd;
+    return -1;
 }
 
 int ClientInstance::writeBlock(int fd, char *strData, int byteOffset, int blockSize)

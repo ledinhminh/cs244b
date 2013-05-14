@@ -6,7 +6,6 @@
 /************************/
 
 #define FS_PORT 40010
-#define FS_GROUP 0xe0010101
 
 enum {
   NormalReturn = 0,
