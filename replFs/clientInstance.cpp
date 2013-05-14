@@ -34,11 +34,36 @@ int ClientInstance::openFile(char *strFileName)
 
 int ClientInstance::writeBlock(int fd, char *strData, int byteOffset, int blockSize)
 {
-    return -1;
+    if(!fileOpened || (fileOpened && fd != curFd)) {
+        return -1;
+    }
+    if(byteOffset < 0 || byteOffset >= MAX_FILE_SIZE) {
+        return -1;
+    }
+    if(strData == NULL) {
+        return -1;
+    }
+    if(blockSize < 0 || blockSize >= MAX_BLOCK_SIZE ) {
+        return -1;
+    }
+    PacketWriteBlock p;
+    p.fileID = curFd;
+    p.blockID = curBlockID++;
+    p.offset = byteOffset;
+    p.size = blockSize;
+    p.payload.write(strData, blockSize);
+    blocks[p.blockID] = p;
+    N->send(p);
+
+    return 0;
 }
 
 int ClientInstance::commit(int fd)
 {
+    if(!fileOpened || (fileOpened && fd != curFd)) {
+        return -1;
+    }
+
     return -1;
 }
 

@@ -16,76 +16,79 @@
 /* ------------------------------------------------------------------ */
 
 int
-main() {
+main()
+{
 
-  int fd;
-  int loopCnt;
-  int byteOffset= 0;
-  char strData[MaxBlockLength];
+    int fd;
+    int loopCnt;
+    int byteOffset = 0;
+    char strData[MaxBlockLength];
 
-  char fileName[32] = "writeTest.txt";
+    char fileName[32] = "writeTest.txt";
 
-  /*****************************/
-  /* Initialize the system     */
-  /*****************************/
-  
-  if( InitReplFs( FS_PORT, 0, 1 ) < 0 ) {
-    fprintf( stderr, "Error initializing the system\n" );
-    return( ErrorExit );
-  }
+    /*****************************/
+    /* Initialize the system     */
+    /*****************************/
 
-  /*****************************/
-  /* Open the file for writing */
-  /*****************************/
+    if( InitReplFs( FS_PORT, 0, 1 ) < 0 ) {
+        fprintf( stderr, "Error initializing the system\n" );
+        return( ErrorExit );
+    }
 
-  fd = OpenFile( fileName );
-  if ( fd < 0 ) {
-    fprintf( stderr, "Error opening file '%s'\n", fileName );
-    return( ErrorExit );
-  }else{
-    fprintf( stderr, "OK: Opening file fd=%d\n", fd );
-    return( NormalExit );
-  }
+    /*****************************/
+    /* Open the file for writing */
+    /*****************************/
 
-  /**************************************/
-  /* Write incrementing numbers to the file */
-  /**************************************/
+    fd = OpenFile( fileName );
+    if ( fd < 0 ) {
+        fprintf( stderr, "Error opening file '%s'\n", fileName );
+        return( ErrorExit );
+    } else {
+        fprintf( stderr, "OK: Opening file fd=%d\n", fd );
+    }
 
-  for ( loopCnt=0; loopCnt<128; loopCnt++ ) {
-    sprintf( strData, "%d\n", loopCnt );
+    /**************************************/
+    /* Write incrementing numbers to the file */
+    /**************************************/
+
+    for ( loopCnt = 0; loopCnt < 4; loopCnt++ ) {
+        sprintf( strData, "%d\n", loopCnt );
 
 #ifdef DEBUG
-    printf( "%d: Writing '%s' to file.\n", loopCnt, strData );
+        printf( "%d: Writing '%s' to file.\n", loopCnt, strData );
 #endif
 
-    if ( WriteBlock( fd, strData, byteOffset, strlen( strData ) ) < 0 ) {
-      printf( "Error writing to file %s [LoopCnt=%d]\n", fileName, loopCnt );
-      return( ErrorExit );
+        if ( WriteBlock( fd, strData, byteOffset, strlen( strData ) ) < 0 ) {
+            printf( "Error writing to file %s [LoopCnt=%d]\n", fileName, loopCnt );
+            return( ErrorExit );
+        }
+        byteOffset += strlen( strData );
+
     }
-    byteOffset += strlen( strData );
-    
-  }
 
 
-  /**********************************************/
-  /* Can we commit the writes to the server(s)? */
-  /**********************************************/
-  if ( Commit( fd ) < 0 ) {
-    printf( "Could not commit changes to File '%s'\n", fileName );
-    return( ErrorExit );
-  }
+    return( NormalExit );
 
-  /**************************************/
-  /* Close the writes to the server(s) */
-  /**************************************/
-  if ( CloseFile( fd ) < 0 ) {
-    printf( "Error Closing File '%s'\n", fileName );
-    return( ErrorExit );
-  }
 
-  printf( "Writes to file '%s' complete.\n", fileName );
+    /**********************************************/
+    /* Can we commit the writes to the server(s)? */
+    /**********************************************/
+    if ( Commit( fd ) < 0 ) {
+        printf( "Could not commit changes to File '%s'\n", fileName );
+        return( ErrorExit );
+    }
 
-  return( NormalExit );
+    /**************************************/
+    /* Close the writes to the server(s) */
+    /**************************************/
+    if ( CloseFile( fd ) < 0 ) {
+        printf( "Error Closing File '%s'\n", fileName );
+        return( ErrorExit );
+    }
+
+    printf( "Writes to file '%s' complete.\n", fileName );
+
+    return( NormalExit );
 }
 
 /* ------------------------------------------------------------------ */

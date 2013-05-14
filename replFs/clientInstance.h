@@ -1,6 +1,7 @@
 #include "string.h"
 #include "sys/time.h"
 #include <set>
+#include <map>
 
 #include "networkInstance.h"
 
@@ -13,8 +14,10 @@ private:
     NetworkInstance *N;
     unsigned int numServers;
     std::set<uint32_t> servers;
+    std::map<uint32_t, PacketWriteBlock> blocks;
     bool fileOpened;
     int curFd;
+    int curBlockID;
     timeval timeOpenFile;
     timeval timeCommit;
 
@@ -23,6 +26,7 @@ public:
         numServers = _numServers;
         fileOpened = false;
         curFd = 1;
+        curBlockID = 1;
         N = new NetworkInstance(_port, FS_GROUP, _droprate, false);
     };
 

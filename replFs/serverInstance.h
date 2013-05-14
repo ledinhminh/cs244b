@@ -2,6 +2,7 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <set>
+#include <map>
 #include <stdio.h>
 
 #include "networkInstance.h"
@@ -24,6 +25,7 @@ private:
     enum serverState state;
     NetworkInstance *N;
     FILE *curFile;
+    std::map<uint32_t, PacketWriteBlock> blocks;
 
 public:
     ServerInstance(unsigned short _port, std::string _mount, int _droprate)
@@ -34,6 +36,9 @@ public:
     };
 
     ~ServerInstance() {
+        if(curFile){
+            fclose(curFile);
+        }
         delete N;
     }
 

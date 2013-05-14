@@ -36,6 +36,7 @@ client.o:	client.c client.h
 
 clean:
 	rm -f appl replFsServer *.o *.a
+	rm -r dir
 
 
 s:

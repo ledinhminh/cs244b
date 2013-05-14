@@ -30,6 +30,7 @@
 #define MAX_FILENAME_SIZE   128
 #define MAX_NUM_BLOCKS      128
 #define MAX_BLOCK_SIZE      512
+#define MAX_FILE_SIZE       (1<<20)
 
 #define FILEOPENACK_OK      0
 #define FILEOPENACK_FAIL    -1
@@ -52,13 +53,26 @@ public:
         buf << other.buf.rdbuf();
     }
 
+    PacketBase& operator= (const PacketBase &other){
+        opCode = other.opCode;
+        zero = other.zero;
+        version = other.version;
+        type = other.type;
+        id = other.id;
+        seqNum = other.seqNum;
+        fileID = other.fileID;
+        buf.str("");
+        buf << other.buf.rdbuf();
+        return *this;
+    }
+
     uint8_t opCode;
     uint8_t zero;
     uint8_t version;
     uint8_t type;
     uint32_t id;
     uint32_t seqNum;
-    uint32_t fileID;
+    int fileID;
 
     std::stringstream buf;
 
@@ -73,7 +87,7 @@ public:
         sink.write(reinterpret_cast<char *>(&p.type),   sizeof(uint8_t));
         sink.write(reinterpret_cast<char *>(&p.id),     sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.seqNum), sizeof(uint32_t));
-        sink.write(reinterpret_cast<char *>(&p.fileID), sizeof(uint32_t));
+        sink.write(reinterpret_cast<char *>(&p.fileID), sizeof(int));
         assert(zero==0);
         assert(version==0);
     }
@@ -87,7 +101,7 @@ public:
         source.read(reinterpret_cast<char *>(&type),    sizeof(uint8_t));
         source.read(reinterpret_cast<char *>(&id),      sizeof(uint32_t));
         source.read(reinterpret_cast<char *>(&seqNum),  sizeof(uint32_t));
-        source.read(reinterpret_cast<char *>(&fileID),  sizeof(uint32_t));
+        source.read(reinterpret_cast<char *>(&fileID),  sizeof(int));
         id = ntohl(id);
         seqNum = ntohl(seqNum);
         fileID = ntohl(fileID);
@@ -164,6 +178,16 @@ public:
         size = other.size;
         payload << other.payload.rdbuf();
     }
+    
+    PacketWriteBlock& operator= (const PacketWriteBlock &other){
+        PacketBase::operator=(other);
+        blockID = other.blockID;
+        offset = other.offset;
+        size = other.size;
+        payload.str("");
+        payload << other.payload.rdbuf();
+        return *this;
+    }
 
     uint32_t blockID;
     uint32_t offset;
@@ -193,6 +217,11 @@ public:
         offset = ntohl(offset);
         size = ntohl(size);
         assert(size <= MAX_BLOCK_SIZE);
+    }
+    
+    void print() {
+        PacketBase::print();
+        printf("blockID[%d]|Offset[%d]|Size[%d]|\n", blockID, offset, size);
     }
 };
 

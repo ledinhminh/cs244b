@@ -47,7 +47,6 @@ OpenFile( char *fileName )
 #endif
 
     return C->openFile(fileName);
-//    fd = open( fileName, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR );
 }
 
 /* ------------------------------------------------------------------ */
@@ -55,11 +54,6 @@ OpenFile( char *fileName )
 int
 WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
 {
-    assert( fd >= 0 );
-    assert( byteOffset >= 0 );
-    assert( buffer );
-    assert( blockSize >= 0 && blockSize < MAX_BLOCK_SIZE );
-
 #ifdef DEBUG
     printf( "WriteBlock: Writing FD=%d, Offset=%d, Length=%d\n",
             fd, byteOffset, blockSize );

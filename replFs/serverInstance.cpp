@@ -57,6 +57,13 @@ void ServerInstance::handleIdle(PacketBase &pb)
 void ServerInstance::handleWrite(PacketBase &pb)
 {
     if(pb.opCode == OPCODE_WRITEBLOCK) {
+        PacketWriteBlock p;
+        p.deserialize(pb.buf);
+        p.print();
+        if(p.fileID!=curFd){
+            throw FSException("Unknown file descriptor");
+        }
+        blocks[p.blockID]=p; 
     } else if(pb.opCode == OPCODE_COMMITPREPARE) {
     } else if(pb.opCode == OPCODE_ABORT) {
     } else if(pb.opCode == OPCODE_CLOSE) {
