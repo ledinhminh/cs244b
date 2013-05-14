@@ -1,4 +1,4 @@
-CFLAGS	= -g -Wall -DSUN
+CFLAGS	= -g -Wall -DSUN 
 # CFLAGS	= -g -Wall -DDEC
 CC	= g++
 CCF	= $(CC) $(CFLAGS)
@@ -31,9 +31,15 @@ $(C_DIR)/libclientReplFs.a:	$(CLIENT_OBJECTS)
 client.o:	client.c client.h
 	$(CCF) -c $(INCDIR) client.c
 
-%.o: %.cpp %.h
+%.o: %.cpp %.h packet.h exception.h
 	$(CCF) -c $(INCDIR) $< -o $@
 
 clean:
 	rm -f appl replFsServer *.o *.a
 
+
+s:
+	./replFsServer -port 40010 -mount dir -drop 0
+
+c:
+	./appl

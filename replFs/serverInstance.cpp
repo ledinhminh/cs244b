@@ -10,6 +10,7 @@ void ServerInstance::run()
         if(pb.type == TYPE_SERVER) {
             continue;
         }
+        pb.print();
         switch(state) {
         case Idle:
             handleIdle(pb);
@@ -29,11 +30,27 @@ void ServerInstance::run()
 void ServerInstance::handleIdle(PacketBase &pb)
 {
     if(pb.opCode == OPCODE_OPENFILE) {
+        std::string filename(mount);
         PacketOpenFile p;
         p.deserialize(pb.buf);
-        curFd=pb.fileID;  
-        fileOpened=true;
-        state = Write;
+        curFd=p.fileID;
+        filename.append("/");
+        filename.append(p.filename);
+        
+        PacketOpenFileAck pr;
+        pr.fileID=curFd;
+        
+        curFile=fopen(filename.c_str(),"w");
+        PRINT("Opening file: %s\t", filename.c_str());
+        if(curFile == NULL){
+            PRINT("FAIL\n");
+            pr.status=FILEOPENACK_FAIL;
+        }else{
+            PRINT("OK\n");
+            pr.status=FILEOPENACK_OK;
+            state = Write;
+        }
+        N->send(pr);
     }
 }
 

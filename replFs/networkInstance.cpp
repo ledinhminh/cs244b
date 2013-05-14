@@ -2,18 +2,26 @@
 
 void NetworkInstance::send(PacketBase &p)
 {
+    const char *buf;
     int packetSize;
     p.seqNum = seqNum++;
     p.id = id;
     std::stringstream sink;
     p.serialize(sink);
-    sink.seekg(0, std::ios::end);
-    packetSize = sink.tellg();
-    sink.seekg(0, std::ios::beg);
+    buf=sink.str().c_str();
+    packetSize=sink.str().length();
     if(isDropped()) {
+        PRINT("Packet dropped\n");
+        p.print();
         return;
     }
-    if (sendto(mySocket, sink.rdbuf(), packetSize, 0,
+    p.print();
+    PRINT("Sending packet...\n");
+    for(int i=0;i<packetSize;i++){
+        PRINT("%02hhX", buf[i]);
+    }
+    PRINT("\n");
+    if (sendto(mySocket, buf, packetSize, 0,
                (sockaddr *) &myAddr, sizeof(sockaddr_in)) < 0) {
         throw FSException("Send error");
     }
@@ -40,8 +48,13 @@ int NetworkInstance::recv(PacketBase &p)
         }
         */
     } else {
+        PRINT("Recvd packet size %d\n", ret);
         std::stringstream source;
         source.write(buf, ret);
+        const char *buff=source.str().c_str();
+        for(unsigned int i=0;i<source.str().length();i++){
+            PRINT("%02hhX", buff[i]);
+        }
         p.deserialize(source);
         return 0;
     }
@@ -68,19 +81,10 @@ bool NetworkInstance::hasData()
 void NetworkInstance::initSocket()
 {
     sockaddr_in		nullAddr;
-    sockaddr_in		*thisHost;
-    char			buf[128];
     int				reuse;
     u_char          ttl;
     struct ip_mreq  mreq;
 
-    /*
-    gethostname(buf, sizeof(buf));
-    if ((thisHost = resolveHost(buf)) == (sockaddr_in *) NULL) {
-        throw FSException("who am I?");
-    }
-    bcopy((caddr_t) thisHost, (caddr_t) &myAddr, sizeof(sockaddr_in));
-    */
     if((mySocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         throw FSException("can't get socket");
     }
@@ -118,27 +122,6 @@ void NetworkInstance::initSocket()
     memcpy(&myAddr, &nullAddr, sizeof(sockaddr_in));
     myAddr.sin_addr.s_addr = htonl(FS_GROUP);
     //fcntl(mySocket, F_SETFL, fcntl(mySocket, F_GETFL, 0) | O_NONBLOCK);
-}
-
-sockaddr_in *NetworkInstance::resolveHost(register char *name)
-{
-    register struct hostent *fhost;
-    struct in_addr fadd;
-    static sockaddr_in sa;
-
-    if ((fhost = gethostbyname(name)) != NULL) {
-        sa.sin_family = fhost->h_addrtype;
-        sa.sin_port = 0;
-        bcopy(fhost->h_addr, &sa.sin_addr, fhost->h_length);
-    } else {
-        if (inet_aton(name, &fadd) != 0) {
-            sa.sin_family = AF_INET;	/* grot */
-            sa.sin_port = 0;
-            sa.sin_addr.s_addr = fadd.s_addr;
-        } else
-            return(NULL);
-    }
-    return(&sa);
 }
 
 bool NetworkInstance::isDropped()

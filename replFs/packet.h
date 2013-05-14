@@ -11,6 +11,8 @@
 #include <iomanip>
 #include <vector>
 
+#include "debug.h"
+
 #define OPCODE_OPENFILE     0x0
 #define OPCODE_OPENFILEACK  0x1
 #define OPCODE_WRITEBLOCK   0x2
@@ -28,6 +30,9 @@
 #define MAX_FILENAME_SIZE   128
 #define MAX_NUM_BLOCKS      128
 #define MAX_BLOCK_SIZE      512
+
+#define FILEOPENACK_OK      0
+#define FILEOPENACK_FAIL    -1
 
 class PacketBase {
 public:
@@ -69,10 +74,13 @@ public:
         sink.write(reinterpret_cast<char *>(&p.id),     sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.seqNum), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.fileID), sizeof(uint32_t));
+        assert(zero==0);
+        assert(version==0);
     }
 
     virtual void deserialize(std::istream &source) {
         buf << source.rdbuf();
+        source.seekg(std::ios_base::beg);
         source.read(reinterpret_cast<char *>(&opCode),  sizeof(uint8_t));
         source.read(reinterpret_cast<char *>(&zero),    sizeof(uint8_t));
         source.read(reinterpret_cast<char *>(&version), sizeof(uint8_t));
@@ -83,14 +91,22 @@ public:
         id = ntohl(id);
         seqNum = ntohl(seqNum);
         fileID = ntohl(fileID);
+        assert(zero==0);
+        assert(version==0);
     }
 
     void print() {
-        for (std::string::size_type i = 0; i < buf.str().length(); ++i) {
-            std::cout << std::hex << std::setfill('0') << std::setw(2)
-                      << (int)buf.str()[i];
+        printf("OpCode[%d]|Type[%d]|ID[%X]|seqNum[%d]|fileID[%d]\n",
+                opCode, type, id, seqNum, fileID);
+    }
+    static void printS(std::ostream &sink){
+        std::stringstream sk;
+        sk << sink.rdbuf();
+        std::string ss=sk.str();
+        for(unsigned int i=0;i<ss.length();i++){
+            printf("%02hhX", ss.c_str()[i]);
         }
-        std::cout << std::endl;
+        printf("\n");
     }
 
 };

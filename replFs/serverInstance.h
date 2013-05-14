@@ -2,6 +2,7 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <set>
+#include <stdio.h>
 
 #include "networkInstance.h"
 

@@ -35,7 +35,7 @@ public:
         port(_port), group(_group), droprate(_droprate) {
         initSocket();
         id = rand();
-        seqNum = 0;
+        seqNum = 1;
         if(isBlocking) {
             pollTimeout = -1;
         } else {
@@ -48,5 +48,4 @@ private:
     bool hasData();
     void initSocket();
     bool isDropped();
-    sockaddr_in *resolveHost(register char *name);
 };
