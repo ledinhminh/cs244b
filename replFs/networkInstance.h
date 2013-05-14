@@ -5,6 +5,7 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <sys/socket.h>
+#include <sys/poll.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <arpa/inet.h>
@@ -13,6 +14,7 @@
 #include "packet.h"
 
 #define FS_GROUP 0xE0010101
+#define POLL_INTERVAL 100
 
 class NetworkInstance {
 private:
@@ -20,6 +22,7 @@ private:
     const unsigned int group;
     const int droprate;
 
+    int pollTimeout;
     int mySocket;
     sockaddr_in myAddr;
 
@@ -27,15 +30,22 @@ private:
     uint32_t id;
 
 public:
-    NetworkInstance(unsigned short _port, unsigned int _group, int _droprate) :
+    NetworkInstance(unsigned short _port, unsigned int _group,
+                    int _droprate, bool isBlocking) :
         port(_port), group(_group), droprate(_droprate) {
         initSocket();
         id = rand();
         seqNum = 0;
+        if(isBlocking) {
+            pollTimeout = -1;
+        } else {
+            pollTimeout = POLL_INTERVAL;
+        }
     };
     void send(PacketBase &p);
     int recv(PacketBase &p);
 private:
+    bool hasData();
     void initSocket();
     bool isDropped();
     sockaddr_in *resolveHost(register char *name);

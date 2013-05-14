@@ -1,4 +1,4 @@
-#include "network.h"
+#include "networkInstance.h"
 
 void NetworkInstance::send(PacketBase &p)
 {
@@ -22,24 +22,47 @@ void NetworkInstance::send(PacketBase &p)
 
 int NetworkInstance::recv(PacketBase &p)
 {
+    if(!hasData()) {
+        return -1;
+    }
     sockaddr fromAddr;
     socklen_t fromlen = sizeof(fromAddr);
     char buf[2048];
     int ret;
     ret = recvfrom(mySocket, buf, sizeof(buf), 0, &fromAddr, &fromlen);
     if(ret < 0) {
+        throw FSException("Recv error");
+        /*
         if(errno == EAGAIN || errno == EWOULDBLOCK) {
             return -1;
         } else {
             throw FSException("Recv error");
         }
+        */
     } else {
         std::stringstream source;
         source.write(buf, ret);
         p.deserialize(source);
         return 0;
     }
-    return -1;
+}
+
+bool NetworkInstance::hasData()
+{
+    int ret;
+    struct pollfd udp;
+    udp.fd = mySocket;
+    udp.events = POLLIN;
+    ret = poll(&udp, 1, pollTimeout);
+    if(ret < 0) {
+        throw FSException("Poll error");
+    } else {
+        if(udp.revents & POLLIN) {
+            return true;
+        } else {
+            return -false;
+        }
+    }
 }
 
 void NetworkInstance::initSocket()
@@ -94,7 +117,7 @@ void NetworkInstance::initSocket()
 
     memcpy(&myAddr, &nullAddr, sizeof(sockaddr_in));
     myAddr.sin_addr.s_addr = htonl(FS_GROUP);
-    fcntl(mySocket, F_SETFL, fcntl(mySocket, F_GETFL, 0) | O_NONBLOCK);
+    //fcntl(mySocket, F_SETFL, fcntl(mySocket, F_GETFL, 0) | O_NONBLOCK);
 }
 
 sockaddr_in *NetworkInstance::resolveHost(register char *name)

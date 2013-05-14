@@ -20,6 +20,7 @@
 #define OPCODE_COMMIT       0x6
 #define OPCODE_COMMITSUCCESS   0x7
 #define OPCODE_ABORT        0x8
+#define OPCODE_CLOSE        0x9
 
 #define TYPE_CLIENT 0
 #define TYPE_SERVER 1

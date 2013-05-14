@@ -31,7 +31,7 @@ InitReplFs( unsigned short portNum, int packetLoss, int numServers )
     printf( "InitReplFs: Port number %d, packet loss %d percent, %d servers\n",
             portNum, packetLoss, numServers );
 #endif
-    C = new ClientInstance(FS_PORT, FS_GROUP, packetLoss, numServers);
+    C = new ClientInstance(FS_PORT, packetLoss, numServers);
     return( NormalReturn );
 }
 

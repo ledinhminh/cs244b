@@ -1,7 +1,8 @@
-#include "network.h"
 #include "string.h"
 #include "sys/time.h"
 #include <set>
+
+#include "networkInstance.h"
 
 /* Timeouts in ms */
 #define OPENFILE_TIMEOUT 1000
@@ -11,18 +12,18 @@ class ClientInstance {
 private:
     NetworkInstance *N;
     unsigned int numServers;
+    std::set<uint32_t> servers;
     bool fileOpened;
     int curFd;
     timeval timeOpenFile;
     timeval timeCommit;
 
 public:
-    ClientInstance(unsigned short _port, unsigned int _group,
-                   int _droprate, int _numServers) {
+    ClientInstance(unsigned short _port, int _droprate, int _numServers) {
         numServers = _numServers;
         fileOpened = false;
-        curFd = 0;
-        N = new NetworkInstance(_port, _group, _droprate);
+        curFd = 1;
+        N = new NetworkInstance(_port, FS_GROUP, _droprate, false);
     };
 
     ~ClientInstance() {

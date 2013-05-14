@@ -7,15 +7,17 @@ int ClientInstance::openFile(char *strFileName)
     }
     /* Send request */
     PacketOpenFile p;
+    p.fileID = ++curFd;
     strcpy(p.filename, strFileName);
     N->send(p);
     setCurrentTime(&timeOpenFile);
 
     /* Wait for response */
-    std::set<uint32_t> servers;
     while(!isTimeout(timeOpenFile, OPENFILE_TIMEOUT)) {
         PacketBase pb;
-        N->recv(pb);
+        if(N->recv(pb) < 0) {
+            continue;
+        }
         /* Only handle OpenFileAck */
         if(pb.opCode == OPCODE_OPENFILEACK) {
             PacketOpenFile pof;
@@ -23,7 +25,7 @@ int ClientInstance::openFile(char *strFileName)
             servers.insert(pof.id);
             if(servers.size() >= numServers) {
                 fileOpened = true;
-                return ++curFd;
+                return curFd;
             }
         }
     }

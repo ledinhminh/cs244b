@@ -42,6 +42,9 @@ main() {
   if ( fd < 0 ) {
     fprintf( stderr, "Error opening file '%s'\n", fileName );
     return( ErrorExit );
+  }else{
+    fprintf( stderr, "OK: Opening file fd=%d\n", fd );
+    return( NormalExit );
   }
 
   /**************************************/
