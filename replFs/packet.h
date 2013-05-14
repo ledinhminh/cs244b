@@ -26,14 +26,9 @@
 #define MAX_NUM_BLOCKS      128
 #define MAX_BLOCK_SIZE      512
 
-struct Packet {
-    uint8_t type;
-    uint8_t body[32];
-};
-
-class PacketHeader {
+class PacketBase {
 public:
-    PacketHeader() {
+    PacketBase() {
         zero = 0;
         version = 0;
     };
@@ -46,7 +41,7 @@ public:
     uint32_t fileID;
 
     virtual void serialize(std::ostream &sink) {
-        PacketHeader p(*this);
+        PacketBase p(*this);
         p.id = htonl(id);
         p.seqNum = htonl(seqNum);
         p.fileID = htonl(fileID);
@@ -74,26 +69,27 @@ public:
 
 };
 
-class PacketOpenFile: public PacketHeader {
+class PacketOpenFile: public PacketBase {
 public:
     PacketOpenFile() {
         opCode = OPCODE_OPENFILE;
         type = TYPE_CLIENT;
+        bzero(filename, sizeof(filename));
     }
     char filename[MAX_FILENAME_SIZE];
 
     virtual void serialize(std::ostream &sink) {
-        PacketHeader::serialize(sink);
+        PacketBase::serialize(sink);
         sink.write(reinterpret_cast<char *>(&filename), sizeof(filename));
     }
     virtual void deserialize(std::istream &source) {
-        PacketHeader::deserialize(source);
+        PacketBase::deserialize(source);
         source.read(reinterpret_cast<char *>(&filename), sizeof(filename));
         filename[MAX_FILENAME_SIZE - 1] = '\0';
     }
 };
 
-class PacketOpenFileAck: public PacketHeader {
+class PacketOpenFileAck: public PacketBase {
 public:
     PacketOpenFileAck() {
         opCode = OPCODE_OPENFILEACK;
@@ -102,17 +98,17 @@ public:
     uint8_t status;
 
     virtual void serialize(std::ostream &sink) {
-        PacketHeader::serialize(sink);
+        PacketBase::serialize(sink);
         sink.write(reinterpret_cast<char *>(&status), sizeof(uint8_t));
     }
 
     virtual void deserialize(std::istream &source) {
-        PacketHeader::deserialize(source);
+        PacketBase::deserialize(source);
         source.read(reinterpret_cast<char *>(&status),  sizeof(uint8_t));
     }
 };
 
-class PacketWriteBlock: public PacketHeader {
+class PacketWriteBlock: public PacketBase {
 public:
     PacketWriteBlock() {
         opCode = OPCODE_WRITEBLOCK;
@@ -120,7 +116,7 @@ public:
     }
 
     /* Copy constructor to handle payload clone */
-    PacketWriteBlock(const PacketWriteBlock &other) : PacketHeader(other) {
+    PacketWriteBlock(const PacketWriteBlock &other) : PacketBase(other) {
         blockID = other.blockID;
         offset = other.offset;
         size = other.size;
@@ -133,7 +129,7 @@ public:
     std::stringstream payload;
 
     virtual void serialize(std::ostream &sink) {
-        PacketHeader::serialize(sink);
+        PacketBase::serialize(sink);
         PacketWriteBlock p(*this);
         p.blockID = htonl(blockID);
         p.offset = htonl(offset);
@@ -146,7 +142,7 @@ public:
     }
 
     virtual void deserialize(std::istream &source) {
-        PacketHeader::deserialize(source);
+        PacketBase::deserialize(source);
         source.read(reinterpret_cast<char *>(&blockID), sizeof(uint32_t));
         source.read(reinterpret_cast<char *>(&offset),  sizeof(uint32_t));
         source.read(reinterpret_cast<char *>(&size),    sizeof(uint32_t));
@@ -158,7 +154,7 @@ public:
     }
 };
 
-class PacketCommitPrepare: public PacketHeader {
+class PacketCommitPrepare: public PacketBase {
 public:
     PacketCommitPrepare() {
         opCode = OPCODE_COMMITPREPARE;
@@ -169,7 +165,7 @@ public:
     std::vector<uint32_t> blockIDs;
 
     virtual void serialize(std::ostream &sink) {
-        PacketHeader::serialize(sink);
+        PacketBase::serialize(sink);
         PacketCommitPrepare p(*this);
         p.numBlocks = htonl(blockIDs.size());
         assert(blockIDs.size() <= MAX_NUM_BLOCKS);
@@ -182,7 +178,7 @@ public:
     }
 
     virtual void deserialize(std::istream &source) {
-        PacketHeader::deserialize(source);
+        PacketBase::deserialize(source);
         source.read(reinterpret_cast<char *>(&numBlocks), sizeof(uint32_t));
         numBlocks = ntohl(numBlocks);
         assert(numBlocks <= MAX_NUM_BLOCKS);
@@ -202,7 +198,7 @@ public:
     }
 };
 
-class PacketCommitReady: public PacketHeader {
+class PacketCommitReady: public PacketBase {
 public:
     PacketCommitReady() {
         opCode = OPCODE_COMMITREADY;
@@ -210,7 +206,7 @@ public:
     }
 };
 
-class PacketCommit: public PacketHeader {
+class PacketCommit: public PacketBase {
 public:
     PacketCommit() {
         opCode = OPCODE_COMMIT;
@@ -218,7 +214,7 @@ public:
     }
 };
 
-class PacketCommitSuccess: public PacketHeader {
+class PacketCommitSuccess: public PacketBase {
 public:
     PacketCommitSuccess() {
         opCode = OPCODE_COMMITSUCCESS;
@@ -226,7 +222,7 @@ public:
     }
 };
 
-class PacketAbort: public PacketHeader {
+class PacketAbort: public PacketBase {
 public:
     PacketAbort() {
         opCode = OPCODE_ABORT;

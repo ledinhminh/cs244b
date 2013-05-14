@@ -1,11 +1,13 @@
 #include <string>
 
-struct FSException : public std::exception{
+class FSException : public std::exception {
+private:
     std::string msg;
-    FSException(std::string _msg): msg(_msg){}
-    const char* what() const throw(){
+public:
+    FSException(std::string _msg): msg(_msg) {};
+    const char *what() const throw() {
         return msg.c_str();
     }
-    virtual ~FSException() throw();
+    ~FSException() throw() {};
 };
-    
+

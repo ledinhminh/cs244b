@@ -10,7 +10,7 @@ INCDIR	= -I$(H)
 LIBDIRS = -L$(C_DIR)
 LIBS    = -lclientReplFs
 
-CLIENT_OBJECTS = client.o
+CLIENT_OBJECTS = network.o clientInstance.o client.o
 
 all:	appl
 
@@ -26,6 +26,15 @@ $(C_DIR)/libclientReplFs.a:	$(CLIENT_OBJECTS)
 
 client.o:	client.c client.h network.cpp network.h packet.h
 	$(CCF) -c $(INCDIR) client.c
+
+clientInstance.o: clientInstance.cpp clientInstance.h
+	$(CCF) -c $(INCDIR) clientInstance.cpp
+
+network.o: network.h network.cpp exception.h packet.h
+	$(CCF) -c $(INCDIR) network.cpp
+
+#%.o: %.cpp %.h exception.h
+#	$(CCF) -c $(INCDIR) $< -o $@
 
 clean:
 	rm -f appl *.o *.a

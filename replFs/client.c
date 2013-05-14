@@ -14,14 +14,13 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include <client.h>
-#include <packet.h>
 #include <iostream>
 #include <iomanip>
 
-#include "network.h"
+#include "client.h"
+#include "clientInstance.h"
 
-static NetworkInstance N(FS_PORT, FS_GROUP);
+static ClientInstance *C;
 
 /* ------------------------------------------------------------------ */
 
@@ -32,6 +31,7 @@ InitReplFs( unsigned short portNum, int packetLoss, int numServers )
     printf( "InitReplFs: Port number %d, packet loss %d percent, %d servers\n",
             portNum, packetLoss, numServers );
 #endif
+    C=new ClientInstance(FS_PORT, FS_GROUP, packetLoss);
     std::stringstream sink;
     PacketCommit cp;
     cp.id = 1;
