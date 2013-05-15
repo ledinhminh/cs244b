@@ -1,0 +1,1744 @@
+~/cs244b/replFs ~/cs244b/replFs/tests
+~/cs244b/replFs/tests
+Wed May 15 12:50:01 PDT 2013
+test_bin = ./test
+make[1]: Entering directory `/afs/ir.stanford.edu/users/w/e/weishi/cs244b/replFs/tests'
+rm -f test *.o *.a
+make[1]: Leaving directory `/afs/ir.stanford.edu/users/w/e/weishi/cs244b/replFs/tests'
+make[1]: Entering directory `/afs/ir.stanford.edu/users/w/e/weishi/cs244b/replFs/tests'
+g++ -g -DSUN -lssl -fpermissive -I/afs/ir/users/w/e/weishi/cs244b/replFs -c test.c
+test.c: In function ‘void parseOptions(int, char**)’:
+test.c:89:29: warning: invalid conversion from ‘char**’ to ‘const char**’ [-fpermissive]
+test.c: At global scope:
+test.c:120:24: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl1()’:
+test.c:185:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:186:52: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl2()’:
+test.c:199:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:200:52: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl3()’:
+test.c:215:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:216:52: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl4()’:
+test.c:232:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:233:52: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:235:43: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl5()’:
+test.c:248:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:249:52: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:250:40: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl6()’:
+test.c:263:24: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:264:23: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:270:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl8()’:
+test.c:306:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:318:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:330:28: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl10()’:
+test.c:362:29: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:371:29: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:372:46: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl11()’:
+test.c:397:29: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:398:52: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:401:56: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c: In function ‘void appl12()’:
+test.c:419:29: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:420:52: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+test.c:424:52: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+g++ -g -DSUN -lssl -fpermissive -o test test.o -L/afs/ir/users/w/e/weishi/cs244b/replFs -lclientReplFs
+make[1]: Leaving directory `/afs/ir.stanford.edu/users/w/e/weishi/cs244b/replFs/tests'
+***** cleaning test directories *****
+***** STARTING servers  #1 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 24460 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+24464 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 12986 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+12989 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #1 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 1 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 1
+OpenFile: Opening File 'file1'
+Send >> 	[  OpenFile   ] - Type[0]|ID[6E29F9BD]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[705EBB5B]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[281A64A9]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=12
+Send >> 	[  WriteBlock ] - Type[0]|ID[6E29F9BD]|seqNum[3]|fileID[2]
+Commit: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[6E29F9BD]|seqNum[4]|fileID[2]
+		[  CommitReady] - Type[1]|ID[281A64A9]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[705EBB5B]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[6E29F9BD]|seqNum[5]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[281A64A9]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[705EBB5B]|seqNum[4]|fileID[2] >> Recv
+Close: FD=2
+Send >> 	[  Close      ] - Type[0]|ID[6E29F9BD]|seqNum[6]|fileID[2]
+Test case #1 DONE
+Exiting
+***** CHECKING #1 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file1
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file1
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file1 - < correct/file1
+server myth1 passed test 1
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file1 - < correct/file1
+server myth2 passed test 1
+***** TEST #1 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #1 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #2 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 24704 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+24712 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 13071 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+13074 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #2 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 2 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 2
+OpenFile: Opening File 'file2'
+Send >> 	[  OpenFile   ] - Type[0]|ID[55452C71]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[1F27AA95]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[45EC3D76]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=12
+Send >> 	[  WriteBlock ] - Type[0]|ID[55452C71]|seqNum[3]|fileID[2]
+Close: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[55452C71]|seqNum[4]|fileID[2]
+		[  CommitReady] - Type[1]|ID[45EC3D76]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[1F27AA95]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[55452C71]|seqNum[5]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[1F27AA95]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[45EC3D76]|seqNum[4]|fileID[2] >> Recv
+Send >> 	[  Close      ] - Type[0]|ID[55452C71]|seqNum[6]|fileID[2]
+Test case #2 DONE
+Exiting
+***** CHECKING #2 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file2
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file2
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file2 - < correct/file2
+server myth1 passed test 2
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file2 - < correct/file2
+server myth2 passed test 2
+***** TEST #2 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #2 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #3 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 25532 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+25541 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 13245 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+13252 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #3 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 3 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 3
+OpenFile: Opening File 'file3'
+Send >> 	[  OpenFile   ] - Type[0]|ID[6B6A08F5]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[657AA0A1]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[7A0F604D]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=12
+Send >> 	[  WriteBlock ] - Type[0]|ID[6B6A08F5]|seqNum[3]|fileID[2]
+Abort: FD=2
+Send >> 	[  Abort      ] - Type[0]|ID[6B6A08F5]|seqNum[4]|fileID[2]
+Close: FD=2
+Send >> 	[  Close      ] - Type[0]|ID[6B6A08F5]|seqNum[5]|fileID[2]
+Test case #3 DONE
+Exiting
+***** CHECKING #3 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file3 - < correct/file3
+./runtest: line 186: correct/file3: No such file or directory
+server myth1 failed test 3
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file3 - < correct/file3
+./runtest: line 186: correct/file3: No such file or directory
+server myth2 failed test 3
+ls: cannot access /afs/ir/users/w/e/weishi/cs244b/replFs/mount/*/*: No such file or directory
+test 3: empty files OK
+***** TEST #3 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #3 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #4 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 25986 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+25994 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 13353 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+13356 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #4 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 4 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 4
+OpenFile: Opening File 'file4'
+Send >> 	[  OpenFile   ] - Type[0]|ID[7F55F228]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[11D83CC6]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[7CE5D97A]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=12
+Send >> 	[  WriteBlock ] - Type[0]|ID[7F55F228]|seqNum[3]|fileID[2]
+Commit: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[7F55F228]|seqNum[4]|fileID[2]
+		[  CommitReady] - Type[1]|ID[11D83CC6]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[7CE5D97A]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[7F55F228]|seqNum[5]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[7CE5D97A]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[11D83CC6]|seqNum[4]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=12, Length=3
+Send >> 	[  WriteBlock ] - Type[0]|ID[7F55F228]|seqNum[6]|fileID[2]
+Abort: FD=2
+Send >> 	[  Abort      ] - Type[0]|ID[7F55F228]|seqNum[7]|fileID[2]
+Close: FD=2
+Send >> 	[  Close      ] - Type[0]|ID[7F55F228]|seqNum[8]|fileID[2]
+Test case #4 DONE
+Exiting
+***** CHECKING #4 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file4
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file4
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file4 - < correct/file4
+server myth1 passed test 4
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file4 - < correct/file4
+server myth2 passed test 4
+***** TEST #4 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #4 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #5 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 26505 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+26522 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 13462 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+13465 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #5 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 5 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 5
+OpenFile: Opening File 'file5'
+Send >> 	[  OpenFile   ] - Type[0]|ID[754383FF]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[3B257C29]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[650810F6]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=12
+Send >> 	[  WriteBlock ] - Type[0]|ID[754383FF]|seqNum[3]|fileID[2]
+WriteBlock: Writing FD=2, Offset=1, Length=1
+Send >> 	[  WriteBlock ] - Type[0]|ID[754383FF]|seqNum[4]|fileID[2]
+Commit: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[754383FF]|seqNum[5]|fileID[2]
+		[  CommitReady] - Type[1]|ID[3B257C29]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[650810F6]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[754383FF]|seqNum[6]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[650810F6]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[3B257C29]|seqNum[4]|fileID[2] >> Recv
+Close: FD=2
+Send >> 	[  Close      ] - Type[0]|ID[754383FF]|seqNum[7]|fileID[2]
+Test case #5 DONE
+Exiting
+***** CHECKING #5 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file5
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file5
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file5 - < correct/file5
+server myth1 passed test 5
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file5 - < correct/file5
+server myth2 passed test 5
+***** TEST #5 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #5 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #6 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+/usr/bin/xauth:  error in locking authority file /afs/ir/users/w/e/weishi/.Xauthority
+***** CHECKING whether servers have started *****
+myth1: 26785 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+26788 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 13560 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+13563 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #6 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 6 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 6
+OpenFile: Opening File 'file6'
+Send >> 	[  OpenFile   ] - Type[0]|ID[3560C0CA]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[7075538D]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[D341C4C]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[3]|fileID[2]
+WriteBlock: Writing FD=2, Offset=8, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[4]|fileID[2]
+WriteBlock: Writing FD=2, Offset=16, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[5]|fileID[2]
+WriteBlock: Writing FD=2, Offset=24, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[6]|fileID[2]
+WriteBlock: Writing FD=2, Offset=32, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[7]|fileID[2]
+WriteBlock: Writing FD=2, Offset=40, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[8]|fileID[2]
+WriteBlock: Writing FD=2, Offset=48, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[9]|fileID[2]
+WriteBlock: Writing FD=2, Offset=56, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[10]|fileID[2]
+WriteBlock: Writing FD=2, Offset=64, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[11]|fileID[2]
+WriteBlock: Writing FD=2, Offset=72, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[12]|fileID[2]
+WriteBlock: Writing FD=2, Offset=80, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[13]|fileID[2]
+WriteBlock: Writing FD=2, Offset=88, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[14]|fileID[2]
+WriteBlock: Writing FD=2, Offset=96, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[15]|fileID[2]
+WriteBlock: Writing FD=2, Offset=104, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[16]|fileID[2]
+WriteBlock: Writing FD=2, Offset=112, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[17]|fileID[2]
+WriteBlock: Writing FD=2, Offset=120, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[18]|fileID[2]
+WriteBlock: Writing FD=2, Offset=128, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[19]|fileID[2]
+WriteBlock: Writing FD=2, Offset=136, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[20]|fileID[2]
+WriteBlock: Writing FD=2, Offset=144, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[21]|fileID[2]
+WriteBlock: Writing FD=2, Offset=152, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[22]|fileID[2]
+WriteBlock: Writing FD=2, Offset=160, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[23]|fileID[2]
+WriteBlock: Writing FD=2, Offset=168, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[24]|fileID[2]
+WriteBlock: Writing FD=2, Offset=176, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[25]|fileID[2]
+WriteBlock: Writing FD=2, Offset=184, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[26]|fileID[2]
+WriteBlock: Writing FD=2, Offset=192, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[27]|fileID[2]
+WriteBlock: Writing FD=2, Offset=200, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[28]|fileID[2]
+WriteBlock: Writing FD=2, Offset=208, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[29]|fileID[2]
+WriteBlock: Writing FD=2, Offset=216, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[30]|fileID[2]
+WriteBlock: Writing FD=2, Offset=224, Length=8
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[31]|fileID[2]
+Commit: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[3560C0CA]|seqNum[32]|fileID[2]
+		[  CommitReady] - Type[1]|ID[7075538D]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[D341C4C]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[3560C0CA]|seqNum[33]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[D341C4C]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[7075538D]|seqNum[4]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=3
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[34]|fileID[2]
+WriteBlock: Writing FD=2, Offset=3, Length=3
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[35]|fileID[2]
+WriteBlock: Writing FD=2, Offset=6, Length=3
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[36]|fileID[2]
+WriteBlock: Writing FD=2, Offset=9, Length=3
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[37]|fileID[2]
+WriteBlock: Writing FD=2, Offset=12, Length=3
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[38]|fileID[2]
+WriteBlock: Writing FD=2, Offset=15, Length=3
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[39]|fileID[2]
+WriteBlock: Writing FD=2, Offset=18, Length=3
+Send >> 	[  WriteBlock ] - Type[0]|ID[3560C0CA]|seqNum[40]|fileID[2]
+Abort: FD=2
+Send >> 	[  Abort      ] - Type[0]|ID[3560C0CA]|seqNum[41]|fileID[2]
+Close: FD=2
+Send >> 	[  Close      ] - Type[0]|ID[3560C0CA]|seqNum[42]|fileID[2]
+Test case #6 DONE
+Exiting
+***** CHECKING #6 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file6
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file6
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file6 - < correct/file6
+server myth1 passed test 6
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file6 - < correct/file6
+server myth2 passed test 6
+***** TEST #6 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #6 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #8 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 26840 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+26843 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 13700 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+13703 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #8 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 8 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 8
+OpenFile: Opening File 'file8'
+Send >> 	[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=512, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[3]|fileID[2]
+WriteBlock: Writing FD=2, Offset=1024, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[4]|fileID[2]
+WriteBlock: Writing FD=2, Offset=1536, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[5]|fileID[2]
+WriteBlock: Writing FD=2, Offset=2048, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[6]|fileID[2]
+WriteBlock: Writing FD=2, Offset=2560, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[7]|fileID[2]
+WriteBlock: Writing FD=2, Offset=3072, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[8]|fileID[2]
+WriteBlock: Writing FD=2, Offset=3584, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[9]|fileID[2]
+WriteBlock: Writing FD=2, Offset=4096, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[10]|fileID[2]
+WriteBlock: Writing FD=2, Offset=4608, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[11]|fileID[2]
+WriteBlock: Writing FD=2, Offset=5120, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[12]|fileID[2]
+WriteBlock: Writing FD=2, Offset=5632, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[13]|fileID[2]
+WriteBlock: Writing FD=2, Offset=6144, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[14]|fileID[2]
+WriteBlock: Writing FD=2, Offset=6656, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[15]|fileID[2]
+WriteBlock: Writing FD=2, Offset=7168, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[16]|fileID[2]
+WriteBlock: Writing FD=2, Offset=7680, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[17]|fileID[2]
+WriteBlock: Writing FD=2, Offset=8192, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[18]|fileID[2]
+WriteBlock: Writing FD=2, Offset=8704, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[19]|fileID[2]
+WriteBlock: Writing FD=2, Offset=9216, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[20]|fileID[2]
+WriteBlock: Writing FD=2, Offset=9728, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[21]|fileID[2]
+WriteBlock: Writing FD=2, Offset=10240, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[22]|fileID[2]
+WriteBlock: Writing FD=2, Offset=10752, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[23]|fileID[2]
+WriteBlock: Writing FD=2, Offset=11264, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[24]|fileID[2]
+WriteBlock: Writing FD=2, Offset=11776, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[25]|fileID[2]
+WriteBlock: Writing FD=2, Offset=12288, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[26]|fileID[2]
+WriteBlock: Writing FD=2, Offset=12800, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[27]|fileID[2]
+WriteBlock: Writing FD=2, Offset=13312, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[28]|fileID[2]
+WriteBlock: Writing FD=2, Offset=13824, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[29]|fileID[2]
+WriteBlock: Writing FD=2, Offset=14336, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[30]|fileID[2]
+WriteBlock: Writing FD=2, Offset=14848, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[31]|fileID[2]
+WriteBlock: Writing FD=2, Offset=15360, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[32]|fileID[2]
+WriteBlock: Writing FD=2, Offset=15872, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[33]|fileID[2]
+WriteBlock: Writing FD=2, Offset=16384, Length=512
+Send >> 	[  Starting server...
+		[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[2]|fileID[2] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file8
+Send >> 	[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[2]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[3]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[4]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[5]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[6]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[7]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[8]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[9]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[10]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[11]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[12]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[13]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[14]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[15]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[16]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[17]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[18]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[19]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[20]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[21]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[22]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[23]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[24]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[25]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[26]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[27]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[28]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[29]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[30]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[31]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[32]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[33]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[34]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[35]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[36]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[37]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[38]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[39]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[40]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[41]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[42]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[43]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[44]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[45]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[46]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[47]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[48]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[49]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[50]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[51]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[52]|fileID[2] >> Recv
+		[CommitPrepare] - Type[0]|ID[4062F7A8]|seqNum[53]|fileID[2] >> Recv
+Send >> 	[  CommitReady] - Type[1]|ID[C541F01]|seqNum[3]|fileID[2]
+Ready to commit
+		[  CommitReady] - Type[1]|ID[C541F01]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] -Starting server...
+		[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[2]|fileID[2] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file8
+Send >> 	[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[2]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[3]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[4]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[5]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[6]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[7]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[8]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[9]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[10]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[11]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[12]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[13]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[14]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[15]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[16]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[17]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[18]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[19]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[20]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[21]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[22]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[23]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[24]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[25]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[26]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[27]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[28]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[29]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[30]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[31]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[32]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[33]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[34]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[35]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[36]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[37]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[38]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[39]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[40]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[41]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[42]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[43]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[44]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[45]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[46]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[47]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[48]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[49]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[50]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[51]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[52]|fileID[2] >> Recv
+		[CommitPrepare] - Type[0]|ID[4062F7A8]|seqNum[53]|fileID[2] >> Recv
+Send >> 	[  CommitReady] - Type[1]|ID[43A93C70]|seqNum[3]|fileID[2]
+Ready to commit
+		[  CommitReady] - Type[1]|ID[C541F01]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady]WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[34]|fileID[2]
+WriteBlock: Writing FD=2, Offset=16896, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[35]|fileID[2]
+WriteBlock: Writing FD=2, Offset=17408, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[36]|fileID[2]
+WriteBlock: Writing FD=2, Offset=17920, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[37]|fileID[2]
+WriteBlock: Writing FD=2, Offset=18432, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[38]|fileID[2]
+WriteBlock: Writing FD=2, Offset=18944, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[39]|fileID[2]
+WriteBlock: Writing FD=2, Offset=19456, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[40]|fileID[2]
+WriteBlock: Writing FD=2, Offset=19968, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[41]|fileID[2]
+WriteBlock: Writing FD=2, Offset=20480, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[42]|fileID[2]
+WriteBlock: Writing FD=2, Offset=20992, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[43]|fileID[2]
+WriteBlock: Writing FD=2, Offset=21504, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[44]|fileID[2]
+WriteBlock: Writing FD=2, Offset=22016, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[45]|fileID[2]
+WriteBlock: Writing FD=2, Offset=22528, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[46]|fileID[2]
+WriteBlock: Writing FD=2, Offset=23040, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[47]|fileID[2]
+WriteBlock: Writing FD=2, Offset=23552, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[48]|fileID[2]
+WriteBlock: Writing FD=2, Offset=24064, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[49]|fileID[2]
+WriteBlock: Writing FD=2, Offset=24576, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[50]|fileID[2]
+WriteBlock: Writing FD=2, Offset=25088, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[51]|fileID[2]
+WriteBlock: Writing FD=2, Offset=25600, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[52]|fileID[2]
+Commit: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[4062F7A8]|seqNum[53]|fileID[2]
+		[  CommitReady] - Type[1]|ID[C541F01]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[43A93C70]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[4062F7A8]|seqNum[54]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[4]|fileID[2] >> Recv
+Close: FD=2
+Send >> 	[  Close      ] - Type[0]|ID[4062F7A8]|seqNum[55]|fileID[2]
+OpenFile: Opening File 'file8'
+Send >> 	[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[56]|fileID[3]
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[5]|fileID[3] >> Recv
+WriteBlock: Writing FD=3, Offset=0, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[57]|fileID[3]
+Commit: FD=3
+Send >> 	[CommitPrepare] - Type[0]|ID[4062F7A8]|seqNum[58]|fileID[3]
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[5]|fileID[3] >> Recv
+		[  CommitReady] - Type[1]|ID[C541F01]|seqNum[6]|fileID[3] >> Recv
+		[  CommitReady] - Type[1]|ID[43A93C70]|seqNum[6]|fileID[3] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[4062F7A8]|seqNum[59]|fileID[3]
+		[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[7]|fileID[3] >> Recv
+		[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[7]|fileID[3] >> Recv
+Close: FD=3
+Send >> 	[  Close      ] - Type[0]|ID[4062F7A8]|seqNum[60]|fileID[3]
+OpenFile: Opening File 'file8'
+Send >> 	[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[61]|fileID[4]
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[8]|fileID[4] >> Recv
+WriteBlock: Writing FD=4, Offset=25600, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[62]|fileID[4]
+WriteBlock: Writing FD=4, Offset=26112, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[63]|fileID[4]
+WriteBlock: Writing FD=4, Offset=26624, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[ Type[1]|ID[43A93C70]|seqNum[3]|fileID[2] >> Recv
+		[  Commit     ] - Type[0]|ID[4062F7A8]|seqNum[54]|fileID[2] >> Recv
+FileID[2] 50 writes committed!
+Send >> 	[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[4]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[4]|fileID[2] >> Recv
+		[  Close      ] - Type[0]|ID[4062F7A8]|seqNum[55]|fileID[2] >> Recv
+FileID[2] closed.
+		[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[56]|fileID[3] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file8
+Send >> 	[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[5]|fileID[3]
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[5]|fileID[3] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[57]|fileID[3] >> Recv
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[5]|fileID[3] >> Recv
+		[CommitPrepare] - Type[0]|ID[4062F7A8]|seqNum[58]|fileID[3] >> Recv
+Send >> 	[  CommitReady] - Type[1]|ID[C541F01]|seqNum[6]|fileID[3]
+Ready to commit
+		[  CommitReady] - Type[1]|ID[C541F01]|seqNum[6]|fileID[3] >> Recv
+		[  CommitReady] - Type[1]|ID[43A93C70]|seqNum[6]|fileID[3] >> Recv
+		[  Commit     ] - Type[0]|ID[4062F7A8]|seqNum[59]|fileID[3] >> Recv
+FileID[3] 1 writes committed!
+Send >> 	[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[7]|fileID[3]
+		[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[7]|fileID[3] >> Recv
+		[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[7]|fileID[3] >> Recv
+		[  Close      ] - Type[0]|ID[4062F7A8]|seqNum[60]|fileID[3] >> Recv
+FileID[3] closed.
+		[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[61]|fileID[4] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file8
+Send >> 	[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[8]|fileID[4]
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[8]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[62]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[63]|fileID[4] >> Recv
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[8]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[64]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[65]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[66]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[67]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[68]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[69]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[70]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[71]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[72]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[73]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[74]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[75]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[76]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[77]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[78]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[79]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[80]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[81]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[82]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[83]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[84]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[85]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[86]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[87]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[88]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[89]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[90]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[91]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[92]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|64]|fileID[4]
+WriteBlock: Writing FD=4, Offset=27136, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[65]|fileID[4]
+WriteBlock: Writing FD=4, Offset=27648, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[66]|fileID[4]
+WriteBlock: Writing FD=4, Offset=28160, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[67]|fileID[4]
+WriteBlock: Writing FD=4, Offset=28672, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[68]|fileID[4]
+WriteBlock: Writing FD=4, Offset=29184, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[69]|fileID[4]
+WriteBlock: Writing FD=4, Offset=29696, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[70]|fileID[4]
+WriteBlock: Writing FD=4, Offset=30208, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[71]|fileID[4]
+WriteBlock: Writing FD=4, Offset=30720, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[72]|fileID[4]
+WriteBlock: Writing FD=4, Offset=31232, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[73]|fileID[4]
+WriteBlock: Writing FD=4, Offset=31744, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[74]|fileID[4]
+WriteBlock: Writing FD=4, Offset=32256, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[75]|fileID[4]
+WriteBlock: Writing FD=4, Offset=32768, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[76]|fileID[4]
+WriteBlock: Writing FD=4, Offset=33280, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[77]|fileID[4]
+WriteBlock: Writing FD=4, Offset=33792, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[78]|fileID[4]
+WriteBlock: Writing FD=4, Offset=34304, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[79]|fileID[4]
+WriteBlock: Writing FD=4, Offset=34816, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[80]|fileID[4]
+WriteBlock: Writing FD=4, Offset=35328, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[81]|fileID[4]
+WriteBlock: Writing FD=4, Offset=35840, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[82]|fileID[4]
+WriteBlock: Writing FD=4, Offset=36352, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[83]|fileID[4]
+WriteBlock: Writing FD=4, Offset=36864, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[84]|fileID[4]
+WriteBlock: Writing FD=4, Offset=37376, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[85]|fileID[4]
+WriteBlock: Writing FD=4, Offset=37888, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[86]|fileID[4]
+WriteBlock: Writing FD=4, Offset=38400, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[87]|fileID[4]
+WriteBlock: Writing FD=4, Offset=38912, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[88]|fileID[4]
+WriteBlock: Writing FD=4, Offset=39424, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[89]|fileID[4]
+WriteBlock: Writing FD=4, Offset=39936, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[90]|fileID[4]
+WriteBlock: Writing FD=4, Offset=40448, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[91]|fileID[4]
+WriteBlock: Writing FD=4, Offset=40960, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[92]|fileID[4]
+WriteBlock: Writing FD=4, Offset=41472, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[93]|fileID[4]
+WriteBlock: Writing FD=4, Offset=41984, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[94]|fileID[4]
+WriteBlock: Writing FD=4, Offset=42496, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[95]|fileID[4]
+WriteBlock: Writing FD=4, Offset=43008, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[96]|fileID[4]
+WriteBlock: Writing FD=4, Offset=43520, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[97]|fileID[4]
+WriteBlock: Writing FD=4, Offset=44032, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[98]|fileID[4]
+Wr - Type[1]|ID[43A93C70]|seqNum[3]|fileID[2] >> Recv
+		[  Commit     ] - Type[0]|ID[4062F7A8]|seqNum[54]|fileID[2] >> Recv
+FileID[2] 50 writes committed!
+Send >> 	[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[4]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[4]|fileID[2] >> Recv
+		[  Close      ] - Type[0]|ID[4062F7A8]|seqNum[55]|fileID[2] >> Recv
+FileID[2] closed.
+		[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[56]|fileID[3] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file8
+Send >> 	[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[5]|fileID[3]
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[5]|fileID[3] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[57]|fileID[3] >> Recv
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[5]|fileID[3] >> Recv
+		[CommitPrepare] - Type[0]|ID[4062F7A8]|seqNum[58]|fileID[3] >> Recv
+Send >> 	[  CommitReady] - Type[1]|ID[43A93C70]|seqNum[6]|fileID[3]
+Ready to commit
+		[  CommitReady] - Type[1]|ID[43A93C70]|seqNum[6]|fileID[3] >> Recv
+		[  CommitReady] - Type[1]|ID[C541F01]|seqNum[6]|fileID[3] >> Recv
+		[  Commit     ] - Type[0]|ID[4062F7A8]|seqNum[59]|fileID[3] >> Recv
+FileID[3] 1 writes committed!
+Send >> 	[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[7]|fileID[3]
+		[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[7]|fileID[3] >> Recv
+		[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[7]|fileID[3] >> Recv
+		[  Close      ] - Type[0]|ID[4062F7A8]|seqNum[60]|fileID[3] >> Recv
+FileID[3] closed.
+		[  OpenFile   ] - Type[0]|ID[4062F7A8]|seqNum[61]|fileID[4] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file8
+Send >> 	[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[8]|fileID[4]
+		[  OpenFileAck] - Type[1]|ID[C541F01]|seqNum[8]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[62]|fileID[4] >> Recv
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[8]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[63]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[64]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[65]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[66]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[67]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[68]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[69]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[70]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[71]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[72]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[73]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[74]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[75]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[76]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[77]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[78]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[79]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[80]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[81]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[82]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[83]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[84]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[85]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[86]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[87]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[88]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[89]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[90]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[91]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[92]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[406iteBlock: Writing FD=4, Offset=44544, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[99]|fileID[4]
+WriteBlock: Writing FD=4, Offset=45056, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[100]|fileID[4]
+WriteBlock: Writing FD=4, Offset=45568, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[101]|fileID[4]
+WriteBlock: Writing FD=4, Offset=46080, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[102]|fileID[4]
+WriteBlock: Writing FD=4, Offset=46592, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[103]|fileID[4]
+WriteBlock: Writing FD=4, Offset=47104, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[104]|fileID[4]
+WriteBlock: Writing FD=4, Offset=47616, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[105]|fileID[4]
+WriteBlock: Writing FD=4, Offset=48128, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[106]|fileID[4]
+WriteBlock: Writing FD=4, Offset=48640, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[107]|fileID[4]
+WriteBlock: Writing FD=4, Offset=49152, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[108]|fileID[4]
+WriteBlock: Writing FD=4, Offset=49664, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[109]|fileID[4]
+WriteBlock: Writing FD=4, Offset=50176, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[110]|fileID[4]
+WriteBlock: Writing FD=4, Offset=50688, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[111]|fileID[4]
+WriteBlock: Writing FD=4, Offset=51200, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[112]|fileID[4]
+WriteBlock: Writing FD=4, Offset=51712, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[113]|fileID[4]
+WriteBlock: Writing FD=4, Offset=52224, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[114]|fileID[4]
+WriteBlock: Writing FD=4, Offset=52736, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[115]|fileID[4]
+WriteBlock: Writing FD=4, Offset=53248, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[116]|fileID[4]
+WriteBlock: Writing FD=4, Offset=53760, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[117]|fileID[4]
+WriteBlock: Writing FD=4, Offset=54272, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[118]|fileID[4]
+WriteBlock: Writing FD=4, Offset=54784, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[119]|fileID[4]
+WriteBlock: Writing FD=4, Offset=55296, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[120]|fileID[4]
+WriteBlock: Writing FD=4, Offset=55808, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[121]|fileID[4]
+WriteBlock: Writing FD=4, Offset=56320, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[122]|fileID[4]
+WriteBlock: Writing FD=4, Offset=56832, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[123]|fileID[4]
+WriteBlock: Writing FD=4, Offset=57344, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[124]|fileID[4]
+WriteBlock: Writing FD=4, Offset=57856, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[125]|fileID[4]
+WriteBlock: Writing FD=4, Offset=58368, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[126]|fileID[4]
+WriteBlock: Writing FD=4, Offset=58880, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[127]|fileID[4]
+WriteBlock: Writing FD=4, Offset=59392, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[128]|fileID[4]
+WriteBlock: Writing FD=4, Offset=59904, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[129]|fileID[4]
+WriteBlock: Writing FD=4, Offset=60416, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[130]|fileID[4]
+WriteBlock: Writing FD=4, Offset=60928, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[131]|fileID[4]
+WriteBlock: Writing FD=4, Offset=61440, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[seqNum[93]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[94]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[95]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[96]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[97]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[98]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[99]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[100]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[101]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[102]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[103]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[104]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[105]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[106]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[107]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[108]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[109]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[110]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[111]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[112]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[113]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[114]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[115]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[116]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[117]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[118]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[119]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[120]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[121]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[122]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[123]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[124]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[125]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[126]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[127]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[128]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[129]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[130]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[131]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[132]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[133]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[134]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[135]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[136]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[137]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[138]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[139]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[140]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[141]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[142]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[143]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[144]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[145]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[146]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[147]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[148]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[149]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[150]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[02F7A8]|seqNum[93]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[94]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[95]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[96]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[97]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[98]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[99]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[100]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[101]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[102]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[103]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[104]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[105]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[106]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[107]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[108]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[109]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[110]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[111]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[112]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[113]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[114]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[115]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[116]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[117]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[118]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[119]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[120]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[121]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[122]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[123]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[124]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[125]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[126]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[127]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[128]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[129]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[130]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[131]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[132]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[133]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[134]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[135]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[136]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[137]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[138]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[139]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[140]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[141]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[142]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[143]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[144]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[145]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[146]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[147]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[148]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[149]|fileID[4] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[150]|fileID[4] >> Recv
+		[  WriteBlock ] -132]|fileID[4]
+WriteBlock: Writing FD=4, Offset=61952, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[133]|fileID[4]
+WriteBlock: Writing FD=4, Offset=62464, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[134]|fileID[4]
+WriteBlock: Writing FD=4, Offset=62976, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[135]|fileID[4]
+WriteBlock: Writing FD=4, Offset=63488, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[136]|fileID[4]
+WriteBlock: Writing FD=4, Offset=64000, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[137]|fileID[4]
+WriteBlock: Writing FD=4, Offset=64512, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[138]|fileID[4]
+WriteBlock: Writing FD=4, Offset=65024, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[139]|fileID[4]
+WriteBlock: Writing FD=4, Offset=65536, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[140]|fileID[4]
+WriteBlock: Writing FD=4, Offset=66048, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[141]|fileID[4]
+WriteBlock: Writing FD=4, Offset=66560, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[142]|fileID[4]
+WriteBlock: Writing FD=4, Offset=67072, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[143]|fileID[4]
+WriteBlock: Writing FD=4, Offset=67584, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[144]|fileID[4]
+WriteBlock: Writing FD=4, Offset=68096, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[145]|fileID[4]
+WriteBlock: Writing FD=4, Offset=68608, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[146]|fileID[4]
+WriteBlock: Writing FD=4, Offset=69120, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[147]|fileID[4]
+WriteBlock: Writing FD=4, Offset=69632, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[148]|fileID[4]
+WriteBlock: Writing FD=4, Offset=70144, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[149]|fileID[4]
+WriteBlock: Writing FD=4, Offset=70656, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[150]|fileID[4]
+WriteBlock: Writing FD=4, Offset=71168, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[151]|fileID[4]
+WriteBlock: Writing FD=4, Offset=71680, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[152]|fileID[4]
+WriteBlock: Writing FD=4, Offset=72192, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[153]|fileID[4]
+WriteBlock: Writing FD=4, Offset=72704, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[154]|fileID[4]
+WriteBlock: Writing FD=4, Offset=73216, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[155]|fileID[4]
+WriteBlock: Writing FD=4, Offset=73728, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[156]|fileID[4]
+WriteBlock: Writing FD=4, Offset=74240, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[157]|fileID[4]
+WriteBlock: Writing FD=4, Offset=74752, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[158]|fileID[4]
+WriteBlock: Writing FD=4, Offset=75264, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[159]|fileID[4]
+WriteBlock: Writing FD=4, Offset=75776, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[160]|fileID[4]
+WriteBlock: Writing FD=4, Offset=76288, Length=512
+Send >> 	[  WriteBlock ] - Type[0]|ID[4062F7A8]|seqNum[161]|fileID[4]
+Commit: FD=4
+Send >> 	[CommitPrepare] - Type[0]|ID[4062F7A8]|seqNum[162]|fileID[4]
+		[  OpenFileAck] - Type[1]|ID[43A93C70]|seqNum[8]|fileID[4] >> Recv
+		[  CommitReady] - Type[1]|ID[C541F01]|seqNum[9]|fileID[4] >> Recv
+		[  CommitReady] - Type[1]|ID[43A93C70]|seqNum[9]|fileID[4] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[4062F7A8]|seqNum[163]|fileID[4]
+		[CommitSuccess] - Type[1]|ID[C541F01]|seqNum[10]|fileID[4] >> Recv
+		[CommitSuccess] - Type[1]|ID[43A93C70]|seqNum[10]|fileID[4] >> Recv
+Close: FD=4
+Send >> 	[  Close      ] - Type[0]|ID[4062F7A8]|seqNum[164]|fileID[4]
+Test case #8 DONE
+Exiting
+***** CHECKING #8 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file8
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file8
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file8 - < correct/file8
+server myth1 passed test 8
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file8 - < correct/file8
+server myth2 passed test 8
+***** TEST #8 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #8 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #10 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 26886 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+26893 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 13802 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+13805 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #10 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 10 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 10
+OpenFile: Opening File 'file10'
+Send >> 	[  OpenFile   ] - Type[0]|ID[4D80EF04]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[15B92340]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[7AD47A2F]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[3]|fileID[2]
+WriteBlock: Writing FD=2, Offset=256, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[4]|fileID[2]
+WriteBlock: Writing FD=2, Offset=512, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[5]|fileID[2]
+WriteBlock: Writing FD=2, Offset=768, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[6]|fileID[2]
+WriteBlock: Writing FD=2, Offset=1024, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[7]|fileID[2]
+WriteBlock: Writing FD=2, Offset=1280, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[8]|fileID[2]
+WriteBlock: Writing FD=2, Offset=1536, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[9]|fileID[2]
+WriteBlock: Writing FD=2, Offset=1792, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[10]|fileID[2]
+WriteBlock: Writing FD=2, Offset=2048, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[11]|fileID[2]
+WriteBlock: Writing FD=2, Offset=2304, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[12]|fileID[2]
+WriteBlock: Writing FD=2, Offset=2560, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[13]|fileID[2]
+WriteBlock: Writing FD=2, Offset=2816, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[14]|fileID[2]
+WriteBlock: Writing FD=2, Offset=3072, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[15]|fileID[2]
+WriteBlock: Writing FD=2, Offset=3328, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[16]|fileID[2]
+WriteBlock: Writing FD=2, Offset=3584, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[17]|fileID[2]
+WriteBlock: Writing FD=2, Offset=3840, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[18]|fileID[2]
+WriteBlock: Writing FD=2, Offset=4096, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[19]|fileID[2]
+WriteBlock: Writing FD=2, Offset=4352, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[20]|fileID[2]
+WriteBlock: Writing FD=2, Offset=4608, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[21]|fileID[2]
+WriteBlock: Writing FD=2, Offset=4864, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[22]|fileID[2]
+WriteBlock: Writing FD=2, Offset=5120, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[23]|fileID[2]
+WriteBlock: Writing FD=2, Offset=5376, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[24]|fileID[2]
+WriteBlock: Writing FD=2, Offset=5632, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[25]|fileID[2]
+WriteBlock: Writing FD=2, Offset=5888, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[26]|fileID[2]
+WriteBlock: Writing FD=2, Offset=6144, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[27]|fileID[2]
+WriteBlock: Writing FD=2, Offset=6400, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[28]|fileID[2]
+WriteBlock: Writing FD=2, Offset=6656, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[29]|fileID[2]
+WriteBlock: Writing FD=2, Offset=6912, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[30]|fileID[2]
+WriteBlock: Writing FD=2, Offset=7168, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[31]|fileID[2]
+WriteBlock: Writing FD=2, Offset=7424, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[32]|fileID[2]
+WriteBlock: Writing FD=2, Offset=7680, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[33]|fileID[2]
+WriteBlock: Writing FD=2, Offset=7936, Length=256
+Send >> 	[  WriteBlock ] - Starting server...
+		[  OpenFile   ] - Type[0]|ID[4D80EF04]|seqNum[2]|fileID[2] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file10
+Send >> 	[  OpenFileAck] - Type[1]|ID[15B92340]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[15B92340]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[7AD47A2F]|seqNum[2]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[3]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[4]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[5]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[6]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[7]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[8]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[9]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[10]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[11]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[12]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[13]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[14]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[15]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[16]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[17]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[18]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[19]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[20]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[21]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[22]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[23]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[24]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[25]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[26]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[27]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[28]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[29]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[30]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[31]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[32]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[33]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[34]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[35]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[36]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[37]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[38]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[39]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[40]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[41]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[42]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[43]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[44]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[45]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[46]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[47]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[48]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[49]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[50]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[51]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[52]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[53]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[54]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[55]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]Starting server...
+		[  OpenFile   ] - Type[0]|ID[4D80EF04]|seqNum[2]|fileID[2] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file10
+Send >> 	[  OpenFileAck] - Type[1]|ID[7AD47A2F]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[15B92340]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[7AD47A2F]|seqNum[2]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[3]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[4]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[5]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[6]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[7]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[8]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[9]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[10]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[11]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[12]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[13]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[14]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[15]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[16]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[17]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[18]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[19]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[20]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[21]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[22]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[23]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[24]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[25]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[26]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[27]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[28]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[29]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[30]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[31]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[32]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[33]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[34]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[35]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[36]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[37]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[38]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[39]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[40]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[41]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[42]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[43]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[44]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[45]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[46]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[47]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[48]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[49]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[50]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[51]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[52]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[53]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[54]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[55]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]Type[0]|ID[4D80EF04]|seqNum[34]|fileID[2]
+WriteBlock: Writing FD=2, Offset=8192, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[35]|fileID[2]
+WriteBlock: Writing FD=2, Offset=8448, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[36]|fileID[2]
+WriteBlock: Writing FD=2, Offset=8704, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[37]|fileID[2]
+WriteBlock: Writing FD=2, Offset=8960, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[38]|fileID[2]
+WriteBlock: Writing FD=2, Offset=9216, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[39]|fileID[2]
+WriteBlock: Writing FD=2, Offset=9472, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[40]|fileID[2]
+WriteBlock: Writing FD=2, Offset=9728, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[41]|fileID[2]
+WriteBlock: Writing FD=2, Offset=9984, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[42]|fileID[2]
+WriteBlock: Writing FD=2, Offset=10240, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[43]|fileID[2]
+WriteBlock: Writing FD=2, Offset=10496, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[44]|fileID[2]
+WriteBlock: Writing FD=2, Offset=10752, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[45]|fileID[2]
+WriteBlock: Writing FD=2, Offset=11008, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[46]|fileID[2]
+WriteBlock: Writing FD=2, Offset=11264, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[47]|fileID[2]
+WriteBlock: Writing FD=2, Offset=11520, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[48]|fileID[2]
+WriteBlock: Writing FD=2, Offset=11776, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[49]|fileID[2]
+WriteBlock: Writing FD=2, Offset=12032, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[50]|fileID[2]
+WriteBlock: Writing FD=2, Offset=12288, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[51]|fileID[2]
+WriteBlock: Writing FD=2, Offset=12544, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[52]|fileID[2]
+WriteBlock: Writing FD=2, Offset=12800, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[53]|fileID[2]
+WriteBlock: Writing FD=2, Offset=13056, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[54]|fileID[2]
+WriteBlock: Writing FD=2, Offset=13312, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[55]|fileID[2]
+WriteBlock: Writing FD=2, Offset=13568, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[56]|fileID[2]
+WriteBlock: Writing FD=2, Offset=13824, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[57]|fileID[2]
+WriteBlock: Writing FD=2, Offset=14080, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[58]|fileID[2]
+WriteBlock: Writing FD=2, Offset=14336, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[59]|fileID[2]
+WriteBlock: Writing FD=2, Offset=14592, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[60]|fileID[2]
+WriteBlock: Writing FD=2, Offset=14848, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[61]|fileID[2]
+WriteBlock: Writing FD=2, Offset=15104, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[62]|fileID[2]
+WriteBlock: Writing FD=2, Offset=15360, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[63]|fileID[2]
+WriteBlock: Writing FD=2, Offset=15616, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[64]|fileID[2]
+WriteBlock: Writing FD=2, Offset=15872, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[65]|fileID[2]
+WriteBlock: Writing FD=2, Offset=16128, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[66]|fileID[2]
+WriteBlock: Writing FD=2, Offset=16384, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[67]|fileID[2]
+WriteBlock: Writing FD=2, Offset=16640, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[68]|fileID[2]
+WriteBlock: Writing FD=2, Offset=16896, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[69]|fileID[2]
+WriteBlock: Writing FD=2, Offset=17152, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[70]|fileID[2]
+WriteBlock: Writing FD=2, Offset=17408, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[71]|fileID[2]
+WriteBlock: Writing FD=2, Offset=17664, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[72]|fileID[2]
+WriteBlock: Writing FD=2, Offset=17920, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[73]|fileID[2]
+WriteBlock: Writing FD=2, Offset=18176, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[74]|fileID[2]
+WriteBlock: Writing FD=2, Offset=18432, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[75]|fileID[2]
+WriteBlock: Writing FD=2, Offset=18688, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[76]|fileID[2]
+WriteBlock: Writing FD=2, Offset=18944, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[77]|fileID[2]
+WriteBlock: Writing FD=2, Offset=19200, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[78]|fileID[2]
+WriteBlock: Writing FD=2, Offset=19456, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[79]|fileID[2]
+WriteBlock: Writing FD=2, Offset=19712, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[80]|fileID[2]
+WriteBlock: Writing FD=2, Offset=19968, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[81]|fileID[2]
+WriteBlock: Writing FD=2, Offset=20224, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[82]|fileID[2]
+WriteBlock: Writing FD=2, Offset=20480, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[83]|fileID[2]
+WriteBlock: Writing FD=2, Offset=20736, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[84]|fileID[2]
+WriteBlock: Writing FD=2, Offset=20992, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[85]|fileID[2]
+WriteBlock: Writing FD=2, Offset=21248, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[86]|fileID[2]
+WriteBlock: Writing FD=2, Offset=21504, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[87]|fileID[2]
+WriteBlock: Writing FD=2, Offset=21760, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[88]|fileID[2]
+WriteBlock: Writing FD=2, Offset=22016, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[89]|fileID[2]
+WriteBlock: Writing FD=2, Offset=22272, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[90]|fileID[2]
+WriteBlock: Writing FD=2, Offset=22528, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[91]|fileID[2]
+WriteBlock: Writing FD=2, Offset=22784, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[92]|fileID[2]
+WriteBlock: Writing FD=2, Offset=23040, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[93]|fileID[2]
+WriteBlock: Writing FD=2, Offset=23296, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[94]|fileID[2]
+WriteBlock: Writing FD=2, Offset=23552, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[95]|fileID[2]
+WriteBlock: Writing FD=2, Offset=23808, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[96]|fileID[2]
+WriteBlock: Writing FD=2, Offset=24064, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[97]|fileID[2]
+WriteBlock: Writing FD=2, Offset=24320, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[98]|fileID[2]
+WriteBlock: Writing FD=2, Offset=24576, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[99]|fileID[2]
+WriteBlock: Writing FD=2, Offset=24832, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[100]|fileID[2]
+WriteBlock: Writing FD=2, Offset=25088, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[101]|fileID[2]
+WriteBlock: Writing FD=2, Offset=25344, Length=256
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[102]|fileID[2]
+Commit: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[4D80EF04]|seqNum[103]|fileID[2]
+		[  CommitReady] - Type[1]|ID[15B92340]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[7AD47A2F]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[4D80EF04]|seqNum[104]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[15B92340]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[7AD47A2F]|seqNum[4]|fileID[2] >> Recv
+Close: FD=2
+Send >> 	[  Close      ] - Type[0]|ID[4D80EF04]|seqNum[105]|fileID[2]
+OpenFile: Opening File 'file10'
+Send >> 	[  OpenFile   ] - Type[0]|ID[4D80EF04]|seqNum[106]|fileID[3]
+		[  OpenFileAck] - Type[1]|ID[7AD47A2F]|seqNum[5]|fileID[3] >> Recv
+WriteBlock: Writing FD=3, Offset=0, Length=6
+Send >> 	[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[107]|fileID[3]
+killing server
+stopServer: ssh -n myth1 killall -s 9 replFsServer
+|ID[4D80EF04]|seqNum[56]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[57]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[58]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[59]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[60]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[61]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[62]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[63]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[64]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[65]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[66]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[67]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[68]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[69]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[70]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[71]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[72]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[73]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[74]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[75]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[76]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[77]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[78]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[79]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[80]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[81]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[82]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[83]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[84]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[85]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[86]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[87]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[88]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[89]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[90]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[91]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[92]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[93]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[94]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[95]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[96]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[97]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[98]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[99]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[100]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[101]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[102]|fileID[2] >> Recv
+		[CommitPrepare] - Type[0]|ID[4D80EF04]|seqNum[103]|fileID[2] >> Recv
+Send >> 	[  CommitReady] - Type[1]|ID[15B92340]|seqNum[3]|fileID[2]
+Ready to commit
+		[  CommitReady] - Type[1]|ID[15B92340]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[7AD47A2F]|seqNum[3]|fileID[2] >> Recv
+		[  Commit     ] - Type[0]|ID[4D80EF04]|seqNum[104]|fileID[2] >> Recv
+FileID[2] 100 writes committed!
+Send >> 	[CommitSuccess] - Type[1]|ID[15B92340]|seqNum[4]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[15B92340]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[7AD47A2F]|seqNum[4]|fileID[2] >> Recv
+		[  Close      ] - Type[0]|ID[4D80EF04]|seqNum[105]|fileID[2] >> Recv
+FileID[2] closed.
+		[  OpenFile   ] - Type[0]|ID[4D80EF04]|seqNum[106]|fileID[3] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/fil|ID[4D80EF04]|seqNum[56]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[57]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[58]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[59]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[60]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[61]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[62]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[63]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[64]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[65]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[66]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[67]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[68]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[69]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[70]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[71]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[72]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[73]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[74]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[75]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[76]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[77]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[78]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[79]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[80]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[81]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[82]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[83]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[84]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[85]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[86]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[87]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[88]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[89]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[90]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[91]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[92]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[93]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[94]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[95]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[96]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[97]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[98]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[99]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[100]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[101]|fileID[2] >> Recv
+		[  WriteBlock ] - Type[0]|ID[4D80EF04]|seqNum[102]|fileID[2] >> Recv
+		[CommitPrepare] - Type[0]|ID[4D80EF04]|seqNum[103]|fileID[2] >> Recv
+Send >> 	[  CommitReady] - Type[1]|ID[7AD47A2F]|seqNum[3]|fileID[2]
+Ready to commit
+		[  CommitReady] - Type[1]|ID[15B92340]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[7AD47A2F]|seqNum[3]|fileID[2] >> Recv
+		[  Commit     ] - Type[0]|ID[4D80EF04]|seqNum[104]|fileID[2] >> Recv
+FileID[2] 100 writes committed!
+Send >> 	[CommitSuccess] - Type[1]|ID[7AD47A2F]|seqNum[4]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[15B92340]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[7AD47A2F]|seqNum[4]|fileID[2] >> Recv
+		[  Close      ] - Type[0]|ID[4D80EF04]|seqNum[105]|fileID[2] >> Recv
+FileID[2] closed.
+		[  OpenFile   ] - Type[0]|ID[4D80EF04]|seqNum[106]|fileID[3] >> Recv
+Opening file: /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/filKilled
+committing
+Commit: FD=3
+Send >> 	[CommitPrepare] - Type[0]|ID[4D80EF04]|seqNum[108]|fileID[3]
+		[  OpenFileAck] - Type[1]|ID[15B92340]|seqNum[5]|fileID[3] >> Recv
+		[  CommitReady] - Type[1]|ID[7AD47A2F]|seqNum[6]|fileID[3] >> Recv
+Commit(3): failed (-1)
+Close: FD=3
+Send >> 	[CommitPrepare] - Type[0]|ID[4D80EF04]|seqNum[109]|fileID[3]
+Send >> 	[  Close      ] - Type[0]|ID[4D80EF04]|seqNum[110]|fileID[3]
+Test case #10 DONE
+Exiting
+***** CHECKING #10 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file10
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file10
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file10 - < correct/file10
+server myth1 passed test 10
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file10 - < correct/file10
+server myth2 passed test 10
+***** TEST #10 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #10 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #11 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 26951 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+26954 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 13994 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+13997 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #11 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 11 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 11
+OpenFile: Opening File 'file11'
+Send >> 	[  OpenFile   ] - Type[0]|ID[33B5EB3B]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[246FC3E1]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[3AA214B8]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=12
+Send >> 	[  WriteBlock ] - Type[0]|ID[33B5EB3B]|seqNum[3]|fileID[2]
+WriteBlock: Writing FD=3, Offset=0, Length=12
+Commit: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[33B5EB3B]|seqNum[4]|fileID[2]
+		[  CommitReady] - Type[1]|ID[246FC3E1]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[3AA214B8]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[33B5EB3B]|seqNum[5]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[3AA214B8]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[246FC3E1]|seqNum[4]|fileID[2] >> Recv
+Close: FD=2
+Send >> 	[  Close      ] - Type[0]|ID[33B5EB3B]|seqNum[6]|fileID[2]
+Test case #11 DONE
+Exiting
+***** CHECKING #11 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file11
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file11
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file11 - < correct/file11
+server myth1 passed test 11
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file11 - < correct/file11
+server myth2 passed test 11
+***** TEST #11 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #11 PASSED *****
+***** STOPPING servers *****
+***** cleaning test directories *****
+***** STARTING servers  #12 *****
+PORT = 40010
+SERVERS = myth1 myth2
+ssh myth1 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0"
+ssh myth2 "cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0"
+***** CHECKING whether servers have started *****
+myth1: 26991 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+26994 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1 -drop 0
+myth2: 14115 ?        Ss     0:00 tcsh -c cd /afs/ir/users/w/e/weishi/cs244b/replFs; ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+14118 ?        S      0:00 ./replFsServer -port 40010 -mount /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2 -drop 0
+***** STARTING TEST #12 (0% loss, 2 servers) *****
+./test -port 40010 -servers 2 -test 12 -packetloss 0 myth1 myth2
+Initializing client
+InitReplFs: Port number 40010, packet loss 0 percent, 2 servers
+Running test case 12
+OpenFile: Opening File 'file12'
+Send >> 	[  OpenFile   ] - Type[0]|ID[6E5D8E27]|seqNum[2]|fileID[2]
+		[  OpenFileAck] - Type[1]|ID[3E00F170]|seqNum[2]|fileID[2] >> Recv
+		[  OpenFileAck] - Type[1]|ID[6E850DA5]|seqNum[2]|fileID[2] >> Recv
+WriteBlock: Writing FD=2, Offset=0, Length=12
+Send >> 	[  WriteBlock ] - Type[0]|ID[6E5D8E27]|seqNum[3]|fileID[2]
+Close: FD=2
+Send >> 	[CommitPrepare] - Type[0]|ID[6E5D8E27]|seqNum[4]|fileID[2]
+		[  CommitReady] - Type[1]|ID[6E850DA5]|seqNum[3]|fileID[2] >> Recv
+		[  CommitReady] - Type[1]|ID[3E00F170]|seqNum[3]|fileID[2] >> Recv
+Send >> 	[  Commit     ] - Type[0]|ID[6E5D8E27]|seqNum[5]|fileID[2]
+		[CommitSuccess] - Type[1]|ID[6E850DA5]|seqNum[4]|fileID[2] >> Recv
+		[CommitSuccess] - Type[1]|ID[3E00F170]|seqNum[4]|fileID[2] >> Recv
+Send >> 	[  Close      ] - Type[0]|ID[6E5D8E27]|seqNum[6]|fileID[2]
+WriteBlock: Writing FD=2, Offset=0, Length=12
+Commit: FD=2
+Commit(2): failed (-1)
+Close: FD=2
+CloseFile(2): failed (-1)
+Test case #12 DONE
+Exiting
+***** CHECKING #12 *****
+result directory:
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1:
+file12
+
+/afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2:
+file12
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth1/file12 - < correct/file12
+server myth1 passed test 12
+diff /afs/ir/users/w/e/weishi/cs244b/replFs/mount/myth2/file12 - < correct/file12
+server myth2 passed test 12
+***** TEST #12 ERRORS:0 (0% loss, 2 servers) *****
+***** TEST #12 PASSED *****
+***** STOPPING servers *****
+***** PASSED 10 TESTS OF 10 (0% loss, 2 servers) *****
+Wed May 15 12:53:26 PDT 2013
+***** TESTS DONE *****
