@@ -32,26 +32,23 @@ void ServerInstance::run()
 void ServerInstance::handleIdle(PacketBase &pb)
 {
     if(pb.opCode == OPCODE_OPENFILE) {
-        std::string filename(mount);
         PacketOpenFile p;
         p.deserialize(pb.buf);
         curFd = p.fileID;
-        filename.append("/");
-        filename.append(p.filename);
+        filepath = mount + "/" + p.filename;
 
         PacketOpenFileAck pr;
         pr.fileID = curFd;
 
-        curFile = fopen(filename.c_str(), "w");
-        PRINT("Opening file: %s\t", filename.c_str());
+        curFile = fopen(filepath.c_str(), "r+");
         if(curFile == NULL) {
-            PRINT("FAIL\n");
-            pr.status = FILEOPENACK_FAIL;
+            newFile = true;
         } else {
-            PRINT("OK\n");
-            pr.status = FILEOPENACK_OK;
-            state = Write;
+            newFile = false;
         }
+        PRINT("Opening file: %s\t", filepath.c_str());
+        pr.status = FILEOPENACK_OK;
+        state = Write;
         N->send(pr);
     }
 }
@@ -96,7 +93,7 @@ void ServerInstance::handleWrite(PacketBase &pb)
     } else if(pb.opCode == OPCODE_CLOSE) {
         /* Close file; Clear block cache; Go to Idle */
         blocks.clear();
-        fclose(curFile);
+        if(curFile) fclose(curFile);
         curFile = NULL;
         state = Idle;
         PRINT("FileID[%d] closed.\n", curFd);
@@ -109,6 +106,13 @@ void ServerInstance::handleCommitReady(PacketBase &pb)
         /* Flush blocks to disk */
         for(mapit it = blocks.begin(); it != blocks.end(); ++it) {
             PacketWriteBlock &blk = it->second;
+            if(newFile) {
+                curFile = fopen(filepath.c_str(), "w");
+                if(curFile == NULL) {
+                    throw FSException("Error creating empty file.");
+                }
+                newFile = false;
+            }
             fseek(curFile, blk.offset, SEEK_SET);
             fwrite(blk.payload.str().c_str(), 1, blk.size, curFile);
         }
@@ -131,7 +135,7 @@ void ServerInstance::handleCommitReady(PacketBase &pb)
     } else if(pb.opCode == OPCODE_CLOSE) {
         /* Close file; Clear block cache; Go to Idle */
         blocks.clear();
-        fclose(curFile);
+        if(curFile) fclose(curFile);
         curFile = NULL;
         state = Idle;
         PRINT("FileID[%d] closed.\n", curFd);

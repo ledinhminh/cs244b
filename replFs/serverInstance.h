@@ -23,6 +23,8 @@ private:
     int curFd;
     enum serverState state;
     NetworkInstance *N;
+    std::string filepath;
+    bool newFile;
     FILE *curFile;
     std::map<uint32_t, PacketWriteBlock> blocks;
     typedef std::map<uint32_t, PacketWriteBlock>::iterator mapit;
