@@ -9,9 +9,10 @@ C_DIR	= .
 INCDIR	= -I$(H)
 LIBDIRS = -L$(C_DIR)
 LIBS    = -lclientReplFs
+includes = $(wildcard *.h)
 
-CLIENT_OBJECTS = networkInstance.o clientInstance.o client.o
-SERVER_OBJECTS = networkInstance.o serverInstance.o server.o
+CLIENT_OBJECTS = packet.o networkInstance.o clientInstance.o client.o
+SERVER_OBJECTS = packet.o networkInstance.o serverInstance.o server.o
 
 all:	appl replFsServer
 
@@ -28,10 +29,10 @@ $(C_DIR)/libclientReplFs.a:	$(CLIENT_OBJECTS)
 	ar cr libclientReplFs.a $(CLIENT_OBJECTS)
 	ranlib libclientReplFs.a
 
-client.o:	client.c client.h
+client.o:	client.c client.h $(includes)
 	$(CCF) -c $(INCDIR) client.c
 
-%.o: %.cpp %.h packet.h exception.h
+%.o: %.cpp %.h $(includes)
 	$(CCF) -c $(INCDIR) $< -o $@
 
 clean:
@@ -44,3 +45,4 @@ s:
 
 c:
 	./appl
+

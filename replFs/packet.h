@@ -1,9 +1,8 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-//#debug NDEBUG
-
 #include <assert.h>
+#include <strings.h>
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sstream>
@@ -12,6 +11,7 @@
 #include <vector>
 
 #include "debug.h"
+#include "fs.h"
 
 #define OPCODE_OPENFILE     0x0
 #define OPCODE_OPENFILEACK  0x1
@@ -27,10 +27,7 @@
 #define TYPE_CLIENT 0
 #define TYPE_SERVER 1
 
-#define MAX_FILENAME_SIZE   128
-#define MAX_NUM_BLOCKS      128
-#define MAX_BLOCK_SIZE      512
-#define MAX_FILE_SIZE       (1<<20)
+#define PROTOCOL_VERSION 1
 
 #define FILEOPENACK_OK      0
 #define FILEOPENACK_FAIL    -1
@@ -39,7 +36,7 @@ class PacketBase {
 public:
     PacketBase() {
         zero = 0;
-        version = 0;
+        version = PROTOCOL_VERSION;
     };
 
     PacketBase(const PacketBase &other) {
@@ -50,7 +47,8 @@ public:
         id = other.id;
         seqNum = other.seqNum;
         fileID = other.fileID;
-        buf << other.buf.rdbuf();
+        buf.str("");
+        buf.write(other.buf.str().c_str(), other.buf.str().length());
     }
 
     PacketBase &operator= (const PacketBase &other) {
@@ -62,7 +60,7 @@ public:
         seqNum = other.seqNum;
         fileID = other.fileID;
         buf.str("");
-        buf << other.buf.rdbuf();
+        buf.write(other.buf.str().c_str(), other.buf.str().length());
         return *this;
     }
 
@@ -75,6 +73,8 @@ public:
     int fileID;
 
     std::stringstream buf;
+
+    static const char* opCodeStr[];
 
     virtual void serialize(std::ostream &sink) {
         PacketBase p(*this);
@@ -89,10 +89,11 @@ public:
         sink.write(reinterpret_cast<char *>(&p.seqNum), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.fileID), sizeof(int));
         assert(zero == 0);
-        assert(version == 0);
+        assert(version == PROTOCOL_VERSION);
     }
 
     virtual void deserialize(std::istream &source) {
+        buf.str("");
         buf << source.rdbuf();
         source.seekg(std::ios_base::beg);
         source.read(reinterpret_cast<char *>(&opCode),  sizeof(uint8_t));
@@ -106,12 +107,12 @@ public:
         seqNum = ntohl(seqNum);
         fileID = ntohl(fileID);
         assert(zero == 0);
-        assert(version == 0);
+        assert(version == PROTOCOL_VERSION);
     }
 
     void print() {
-        printf("OpCode[%d]|Type[%d]|ID[%X]|seqNum[%d]|fileID[%d]\n",
-               opCode, type, id, seqNum, fileID);
+        PRINT("[%13s] - Type[%d]|ID[%X]|seqNum[%d]|fileID[%d]",
+               opCodeStr[opCode], type, id, seqNum, fileID);
     }
 
 };
@@ -204,16 +205,18 @@ public:
         source.read(reinterpret_cast<char *>(&blockID), sizeof(uint32_t));
         source.read(reinterpret_cast<char *>(&offset),  sizeof(uint32_t));
         source.read(reinterpret_cast<char *>(&size),    sizeof(uint32_t));
+        payload.str("");
         payload << source.rdbuf();
         blockID = ntohl(blockID);
         offset = ntohl(offset);
         size = ntohl(size);
         assert(size <= MAX_BLOCK_SIZE);
+        assert(size == payload.str().length());
     }
 
     void print() {
         PacketBase::print();
-        printf("blockID[%d]|Offset[%d]|Size[%d]|\n", blockID, offset, size);
+        PRINT("blockID[%d]|Offset[%d]|Size[%d]|\n", blockID, offset, size);
     }
 };
 
@@ -253,6 +256,7 @@ public:
     }
 };
 
+/* Same format as PacketCommitPrepare */
 class PacketResendBlock: public PacketCommitPrepare {
 public:
     PacketResendBlock() {

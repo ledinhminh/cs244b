@@ -1,3 +1,6 @@
+#ifndef SERVERINSTANCE_H
+#define SERVERINSTANCE_H
+
 #include "string.h"
 #include <sys/time.h>
 #include <sys/stat.h>
@@ -52,3 +55,5 @@ private:
     void handleWrite(PacketBase &p);
     void handleCommitReady(PacketBase &p);
 };
+
+#endif

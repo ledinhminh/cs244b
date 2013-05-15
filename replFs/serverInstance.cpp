@@ -4,15 +4,15 @@ void ServerInstance::run()
 {
     while(true) {
         PacketBase pb;
-        if(N->recv(pb) < 0) {
-            throw FSException("Server non-blocking!");
+        if(N->recv(pb) == 0) {
+            continue;
         }
-        //TODO: check seqNum
         if(pb.type == TYPE_SERVER) {
             continue;
         }
-        PRINT("Processing packet...\t");
+        PRINT("\t\t");
         pb.print();
+        PRINT(" >> Recv\n");
         switch(state) {
         case Idle:
             handleIdle(pb);
@@ -40,13 +40,13 @@ void ServerInstance::handleIdle(PacketBase &pb)
         PacketOpenFileAck pr;
         pr.fileID = curFd;
 
-        curFile = fopen(filepath.c_str(), "r+");
+        curFile = fopen(filepath.c_str(), "r+b");
         if(curFile == NULL) {
             newFile = true;
         } else {
             newFile = false;
         }
-        PRINT("Opening file: %s\t", filepath.c_str());
+        PRINT("Opening file: %s\n", filepath.c_str());
         pr.status = FILEOPENACK_OK;
         state = Write;
         N->send(pr);
@@ -107,7 +107,7 @@ void ServerInstance::handleCommitReady(PacketBase &pb)
         for(mapit it = blocks.begin(); it != blocks.end(); ++it) {
             PacketWriteBlock &blk = it->second;
             if(newFile) {
-                curFile = fopen(filepath.c_str(), "w");
+                curFile = fopen(filepath.c_str(), "wb");
                 if(curFile == NULL) {
                     throw FSException("Error creating empty file.");
                 }
@@ -115,6 +115,7 @@ void ServerInstance::handleCommitReady(PacketBase &pb)
             }
             fseek(curFile, blk.offset, SEEK_SET);
             fwrite(blk.payload.str().c_str(), 1, blk.size, curFile);
+            fflush(curFile);
         }
         PRINT("FileID[%d] %lu writes committed!\n", curFd, blocks.size());
         PacketCommitSuccess pcs;

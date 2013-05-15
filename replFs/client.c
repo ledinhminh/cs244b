@@ -59,19 +59,6 @@ WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
             fd, byteOffset, blockSize );
 #endif
     return C->writeBlock(fd, buffer, byteOffset, blockSize);
-    /*
-    if ( lseek( fd, byteOffset, SEEK_SET ) < 0 ) {
-        perror( "WriteBlock Seek" );
-        return(ErrorReturn);
-    }
-
-    if ( ( bytesWritten = write( fd, buffer, blockSize ) ) < 0 ) {
-        perror( "WriteBlock write" );
-        return(ErrorReturn);
-    }
-
-    return( bytesWritten );
-    */
 }
 
 /* ------------------------------------------------------------------ */
@@ -79,8 +66,6 @@ WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
 int
 Commit( int fd )
 {
-    assert( fd >= 0 );
-
 #ifdef DEBUG
     printf( "Commit: FD=%d\n", fd );
 #endif
@@ -93,15 +78,9 @@ Commit( int fd )
 int
 Abort( int fd )
 {
-    assert( fd >= 0 );
-
 #ifdef DEBUG
     printf( "Abort: FD=%d\n", fd );
 #endif
-
-    /*************************/
-    /* Abort the transaction */
-    /*************************/
 
     return C->abort(fd);
 }
@@ -112,28 +91,11 @@ int
 CloseFile( int fd )
 {
 
-    assert( fd >= 0 );
-
 #ifdef DEBUG
     printf( "Close: FD=%d\n", fd );
 #endif
 
-    /*****************************/
-    /* Check for Commit or Abort */
-    /*****************************/
     return C->closeFile(fd);
-    /*
-    if ( close( fd ) < 0 ) {
-        perror("Close");
-        return(ErrorReturn);
-    }
-
-    return(NormalReturn);
-    */
 }
-
-/* ------------------------------------------------------------------ */
-
-
 
 

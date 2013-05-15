@@ -1,3 +1,6 @@
+#ifndef EXCEPTION_H
+#define EXCEPTION_H
+
 #include <string>
 
 class FSException : public std::exception {
@@ -11,3 +14,4 @@ public:
     ~FSException() throw() {};
 };
 
+#endif

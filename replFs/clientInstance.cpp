@@ -37,13 +37,13 @@ int ClientInstance::writeBlock(int fd, char *strData, int byteOffset, int blockS
     if(!fileOpened || (fileOpened && fd != curFd)) {
         return -1;
     }
-    if(byteOffset < 0 || byteOffset >= MAX_FILE_SIZE) {
+    if(byteOffset < 0 || byteOffset > MAX_FILE_SIZE) {
         return -1;
     }
     if(strData == NULL) {
         return -1;
     }
-    if(blockSize < 0 || blockSize >= MAX_BLOCK_SIZE ) {
+    if(blockSize < 0 || blockSize > MAX_BLOCK_SIZE ) {
         return -1;
     }
     PacketWriteBlock p;
@@ -54,7 +54,7 @@ int ClientInstance::writeBlock(int fd, char *strData, int byteOffset, int blockS
     p.payload.write(strData, blockSize);
     blocks[p.blockID] = p;
     N->send(p);
-
+    usleep(100);
     return 0;
 }
 

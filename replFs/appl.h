@@ -1,9 +1,3 @@
-/****************/
-/* Your Name	*/
-/* Date		*/
-/* CS 244B	*/
-/* Spring 2013	*/
-/****************/
 
 int const MaxWrites = 128;
 int const MaxBlockLength = 512;

@@ -2,31 +2,34 @@
 
 void NetworkInstance::send(PacketBase &p)
 {
-    const char *buf;
-    int packetSize;
     p.seqNum = seqNum++;
     p.id = id;
     std::stringstream sink;
     p.serialize(sink);
-    buf=sink.str().c_str();
-    packetSize=sink.str().length();
     if(isDropped()) {
         PRINT("Packet dropped\n");
         p.print();
         return;
     }
-    PRINT("Sending packet...\t");
+    PRINT("Send >> \t");
     p.print();
-    for(int i=0;i<packetSize;i++){
-        //PRINT("%02hhX", buf[i]);
+    PRINT("\n");
+    for(unsigned int i = 0; i < sink.str().length(); i++) {
+        //PRINT("%02hhX", sink.str()[i]);
     }
-    if (sendto(mySocket, buf, packetSize, 0,
+    if (sendto(mySocket, sink.str().c_str(), sink.str().length(), 0,
                (sockaddr *) &myAddr, sizeof(sockaddr_in)) < 0) {
         throw FSException("Send error");
     }
 
 }
 
+/**
+ * Receive packet from network without blocking using poll().
+ *
+ * @param p Packet to fill in
+ * @return 0 if packet discarded due to reorder; packet size if success
+ */
 int NetworkInstance::recv(PacketBase &p)
 {
     if(!hasData()) {
@@ -40,14 +43,31 @@ int NetworkInstance::recv(PacketBase &p)
     if(ret < 0) {
         throw FSException("Recv error");
     } else {
-        //PRINT("Recvd packet size %d...", ret);
         std::stringstream source;
         source.write(buf, ret);
-        for(unsigned int i=0;i<source.str().length();i++){
+        for(unsigned int i = 0; i < source.str().length(); i++) {
             //PRINT("%02hhX", source.str()[i]);
         }
         p.deserialize(source);
-        return 0;
+        if(isDropped()) {
+            PRINT("Packet dropped\n");
+            p.print();
+            return 0;
+        }
+        if(p.seqNum <= seqMap[p.id]) {
+            p.print();
+            PRINT("Reorder detected. Discard. Saved=%d; Packet=%d ID=%08X\n",
+                    seqMap[p.id], p.seqNum, p.id);
+            return 0;
+        } else {
+            if(p.type == TYPE_SERVER) {
+                PRINT("\t\t");
+                p.print();
+                PRINT(" >> Recv\n");
+            }
+            seqMap[p.id] = p.seqNum;
+            return ret;
+        }
     }
 }
 

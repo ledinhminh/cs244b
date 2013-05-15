@@ -1,3 +1,6 @@
+#ifndef DEBUG_H
+#define DEBUG_H
+
 #include "stdio.h"
 #define DEBUG
 
@@ -8,4 +11,6 @@
 #endif
 
 #define PRINT(...) \
-    do { if (DEBUG_TEST) fprintf(stderr, __VA_ARGS__); } while (0)
+    do { if (DEBUG_TEST) fprintf(stdout, __VA_ARGS__); } while (0)
+
+#endif

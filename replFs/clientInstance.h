@@ -1,3 +1,6 @@
+#ifndef CLIENTINSTANCE_H
+#define CLIENTINSTANCE_H
+
 #include "string.h"
 #include "sys/time.h"
 #include <set>
@@ -49,3 +52,5 @@ private:
     bool isTimeout(timeval startup, long timeout);
     long timediff(timeval t1, timeval t2);
 };
+
+#endif
