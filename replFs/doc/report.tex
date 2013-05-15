@@ -209,6 +209,16 @@ it commits local changes and replies with a CommitSuccess packet.
 \end{figure}
 The client sends abort packet to all servers to discard the uncommited changes.
 
+\subsection{Close}
+\begin{figure}[H]
+\centering
+	\begin{bytefield}{32}
+        \packetHeader{0x09}
+	\end{bytefield}
+	\caption{Close Packet}
+\end{figure}
+The client sends close packet to all servers to close the file.
+
 \section{Protocol Details}
 
 \subsection{Node ID generation}
