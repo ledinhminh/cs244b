@@ -63,19 +63,115 @@ int ClientInstance::commit(int fd)
     if(!fileOpened || (fileOpened && fd != curFd)) {
         return -1;
     }
+    /* Prepare */
+    PacketCommitPrepare p;
+    p.fileID = curFd;
+    p.numBlocks = blocks.size();
+    for(mapit it = blocks.begin(); it != blocks.end(); ++it) {
+        p.blockIDs.push_back(it->first);
+    }
+    N->send(p);
 
+    /* Wait for CommitReady || Resend */
+    std::set<uint32_t> readyServers;
+    setCurrentTime(&timeCommitPrepare);
+
+    while(!isTimeout(timeCommitPrepare, COMMITPREPARE_TIMEOUT)) {
+        PacketBase pb;
+        if(N->recv(pb) < 0) {
+            continue;
+        }
+        if(pb.opCode == OPCODE_COMMITREADY) {
+            PacketCommitReady pcr;
+            pcr.deserialize(pb.buf);
+            readyServers.insert(pcr.id);
+            if(readyServers.size() >= numServers) {
+                PacketCommit pc;
+                pc.fileID = curFd;
+                N->send(pc);
+                return commitFinal();
+            }
+        } else if(pb.opCode == OPCODE_RESENDBLOCK) {
+            /* + Resend blocks
+             * + Reset timer
+             * + Reset readyServers
+             * + Resend CommitPrepare */
+            setCurrentTime(&timeCommitPrepare);
+            readyServers.clear();
+            PacketResendBlock prb;
+            prb.deserialize(pb.buf);
+            for(blockIDit it = prb.blockIDs.begin(); it != prb.blockIDs.end(); ++it) {
+                mapit blk = blocks.find(*it);
+                if(blk == blocks.end()) {
+                    throw FSException("Unknown blocks to resend");
+                }
+                N->send(blk->second);
+            }
+            PacketCommitPrepare pcp;
+            pcp.fileID = curFd;
+            pcp.numBlocks = blocks.size();
+            for(mapit it = blocks.begin(); it != blocks.end(); ++it) {
+                pcp.blockIDs.push_back(it->first);
+            }
+            N->send(pcp);
+        }
+    }
+    return -1;
+}
+
+int ClientInstance::commitFinal()
+{
+    setCurrentTime(&timeCommit);
+    std::set<uint32_t> successServers;
+    while(!isTimeout(timeCommit, COMMIT_TIMEOUT)) {
+        PacketBase pb;
+        if(N->recv(pb) < 0) {
+            continue;
+        }
+        if(pb.opCode == OPCODE_COMMITSUCCESS) {
+            PacketCommitSuccess pcs;
+            pcs.deserialize(pb.buf);
+            successServers.insert(pcs.id);
+            if(successServers.size() >= numServers) {
+                /* Clear block cache upon commit */
+                blocks.clear();
+                return 0;
+            }
+        }
+    }
     return -1;
 }
 
 int ClientInstance::abort(int fd)
 {
-    return -1;
+    if(!fileOpened || (fileOpened && fd != curFd)) {
+        return -1;
+    }
+    PacketAbort p;
+    p.fileID = curFd;
+    N->send(p);
+    blocks.clear();
+    return 0;
 }
 
 int ClientInstance::closeFile(int fd)
 {
-    return -1;
+    if(!fileOpened || (fileOpened && fd != curFd)) {
+        return -1;
+    }
+    bool pendingCommit = blocks.size() > 0;
+    if(pendingCommit) {
+        commit(fd);
+    }
+    fileOpened = false;
+    PacketClose p;
+    p.fileID = curFd;
+    N->send(p);
+    blocks.clear();
+    return 0;
 }
+
+/* ----------------- Private ----------------------- */
 
 void ClientInstance::setCurrentTime(timeval *t)
 {

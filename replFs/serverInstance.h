@@ -14,22 +14,23 @@
 enum serverState{
     Idle, //OpenFile
     Write, //WriteBlock, CommitPrepare, Abort, Close
-    CommitReady, //Commit, Close
+    CommitReady, //WriteBlock, Commit, Close
 };
 
 class ServerInstance {
 private:
     const std::string mount;
-    bool fileOpened;
     int curFd;
     enum serverState state;
     NetworkInstance *N;
     FILE *curFile;
     std::map<uint32_t, PacketWriteBlock> blocks;
+    typedef std::map<uint32_t, PacketWriteBlock>::iterator mapit;
+    typedef std::vector<uint32_t>::iterator blockIDit;
 
 public:
     ServerInstance(unsigned short _port, std::string _mount, int _droprate)
-        : mount(_mount), fileOpened(false), curFd(1), state(Idle) {
+        : mount(_mount), curFd(1), state(Idle) {
         N = new NetworkInstance(_port, FS_GROUP, _droprate, true);
         curFile=NULL;
         mkdir(mount.c_str(), S_IRUSR | S_IWUSR);

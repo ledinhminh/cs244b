@@ -53,7 +53,7 @@ public:
         buf << other.buf.rdbuf();
     }
 
-    PacketBase& operator= (const PacketBase &other){
+    PacketBase &operator= (const PacketBase &other) {
         opCode = other.opCode;
         zero = other.zero;
         version = other.version;
@@ -88,8 +88,8 @@ public:
         sink.write(reinterpret_cast<char *>(&p.id),     sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.seqNum), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.fileID), sizeof(int));
-        assert(zero==0);
-        assert(version==0);
+        assert(zero == 0);
+        assert(version == 0);
     }
 
     virtual void deserialize(std::istream &source) {
@@ -105,22 +105,13 @@ public:
         id = ntohl(id);
         seqNum = ntohl(seqNum);
         fileID = ntohl(fileID);
-        assert(zero==0);
-        assert(version==0);
+        assert(zero == 0);
+        assert(version == 0);
     }
 
     void print() {
         printf("OpCode[%d]|Type[%d]|ID[%X]|seqNum[%d]|fileID[%d]\n",
-                opCode, type, id, seqNum, fileID);
-    }
-    static void printS(std::ostream &sink){
-        std::stringstream sk;
-        sk << sink.rdbuf();
-        std::string ss=sk.str();
-        for(unsigned int i=0;i<ss.length();i++){
-            printf("%02hhX", ss.c_str()[i]);
-        }
-        printf("\n");
+               opCode, type, id, seqNum, fileID);
     }
 
 };
@@ -176,16 +167,17 @@ public:
         blockID = other.blockID;
         offset = other.offset;
         size = other.size;
-        payload << other.payload.rdbuf();
+        payload.str("");
+        payload.write(other.payload.str().c_str(), other.payload.str().length());
     }
-    
-    PacketWriteBlock& operator= (const PacketWriteBlock &other){
+
+    PacketWriteBlock &operator= (const PacketWriteBlock &other) {
         PacketBase::operator=(other);
         blockID = other.blockID;
         offset = other.offset;
         size = other.size;
         payload.str("");
-        payload << other.payload.rdbuf();
+        payload.write(other.payload.str().c_str(), other.payload.str().length());
         return *this;
     }
 
@@ -204,7 +196,7 @@ public:
         sink.write(reinterpret_cast<char *>(&p.blockID), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.offset), sizeof(uint32_t));
         sink.write(reinterpret_cast<char *>(&p.size), sizeof(uint32_t));
-        sink << payload.rdbuf();
+        sink.write(payload.str().c_str(), payload.str().length());
     }
 
     virtual void deserialize(std::istream &source) {
@@ -218,7 +210,7 @@ public:
         size = ntohl(size);
         assert(size <= MAX_BLOCK_SIZE);
     }
-    
+
     void print() {
         PacketBase::print();
         printf("blockID[%d]|Offset[%d]|Size[%d]|\n", blockID, offset, size);
@@ -297,6 +289,14 @@ class PacketAbort: public PacketBase {
 public:
     PacketAbort() {
         opCode = OPCODE_ABORT;
+        type = TYPE_CLIENT;
+    }
+};
+
+class PacketClose: public PacketBase {
+public:
+    PacketClose() {
+        opCode = OPCODE_CLOSE;
         type = TYPE_CLIENT;
     }
 };

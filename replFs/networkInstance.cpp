@@ -15,12 +15,11 @@ void NetworkInstance::send(PacketBase &p)
         p.print();
         return;
     }
+    PRINT("Sending packet...\t");
     p.print();
-    PRINT("Sending packet...\n");
     for(int i=0;i<packetSize;i++){
-        PRINT("%02hhX", buf[i]);
+        //PRINT("%02hhX", buf[i]);
     }
-    PRINT("\n");
     if (sendto(mySocket, buf, packetSize, 0,
                (sockaddr *) &myAddr, sizeof(sockaddr_in)) < 0) {
         throw FSException("Send error");
@@ -40,20 +39,12 @@ int NetworkInstance::recv(PacketBase &p)
     ret = recvfrom(mySocket, buf, sizeof(buf), 0, &fromAddr, &fromlen);
     if(ret < 0) {
         throw FSException("Recv error");
-        /*
-        if(errno == EAGAIN || errno == EWOULDBLOCK) {
-            return -1;
-        } else {
-            throw FSException("Recv error");
-        }
-        */
     } else {
-        PRINT("Recvd packet size %d\n", ret);
+        //PRINT("Recvd packet size %d...", ret);
         std::stringstream source;
         source.write(buf, ret);
-        const char *buff=source.str().c_str();
         for(unsigned int i=0;i<source.str().length();i++){
-            PRINT("%02hhX", buff[i]);
+            //PRINT("%02hhX", source.str()[i]);
         }
         p.deserialize(source);
         return 0;
