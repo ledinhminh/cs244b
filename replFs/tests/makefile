@@ -17,10 +17,11 @@ test.o: test.c
 clean:
 	rm -f test *.o *.a
 
-run:
+run1:
 	rm result
 	./runtest --port 40010 --rundir .. --servers 2 2>&1 | tee result
 
-rundrop:
-	rm result
-	./runtest -d 10 --port 40010 --rundir .. --servers 2 2>&1 | tee result
+run:
+	-rm resul*
+	./runtest -d 20 --port 40010 --rundir .. --servers 5 2>&1 | tee result
+#	./runtest -d 30 --port 40010 --rundir .. --servers 8 2>&1 | tee resultExtra

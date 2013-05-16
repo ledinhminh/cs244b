@@ -73,11 +73,16 @@ tests="1 2 3 4 5 6 8 10 11 12"
 
 # The set of servers to use
 working_servers="
+    myth26
+    myth27
+    myth28
+    myth29
+    myth30
+    myth31
     myth1
     myth2
     myth3
     myth4
-    myth5
     myth8
     myth9
     myth10
@@ -93,15 +98,10 @@ working_servers="
     myth23
     myth24
     myth25
-    myth26
-    myth27
-    myth28
-    myth29
-    myth30
-    myth31
     myth32
 "
 broken_servers="
+    myth5
     myth6
     myth7
     myth17
