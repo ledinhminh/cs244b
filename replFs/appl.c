@@ -15,6 +15,8 @@
 #include <client.h>
 #include <appl.h>
 
+#define FS_PORT 40010
+
 static void applme0();
 static int appl8();
 

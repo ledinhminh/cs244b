@@ -5,8 +5,6 @@
 /* Spring 2013          */
 /************************/
 
-#define FS_PORT 40010
-
 enum {
   NormalReturn = 0,
   ErrorReturn = -1,
