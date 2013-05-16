@@ -10,8 +10,13 @@
 
 /* Timeouts in ms */
 #define OPENFILE_TIMEOUT 1000
+#define OPENFILE_RETRY_TIMEOUT 120
+
 #define COMMITPREPARE_TIMEOUT 1000
+#define COMMITPREPARE_RETRY_TIMEOUT 120
+
 #define COMMIT_TIMEOUT 1000
+#define COMMIT_RETRY_TIMEOUT 120
 
 class ClientInstance {
 private:
@@ -20,13 +25,16 @@ private:
     std::set<uint32_t> servers;
     std::map<uint32_t, PacketWriteBlock> blocks;
     typedef std::map<uint32_t, PacketWriteBlock>::iterator mapit;
-    typedef std::vector<uint32_t>::iterator blockIDit;
+    typedef std::set<uint32_t>::iterator blockIDit;
     bool fileOpened;
     int curFd;
     int curBlockID;
     timeval timeOpenFile;
+    timeval timeOpenFileRetry;
     timeval timeCommitPrepare;
+    timeval timeCommitPrepareRetry;
     timeval timeCommit;
+    timeval timeCommitRetry;
 
 public:
     ClientInstance(unsigned short _port, int _droprate, int _numServers) {

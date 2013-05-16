@@ -1,14 +1,14 @@
 #include "packet.h"
 
 const char *PacketBase::opCodeStr[] = {
-    "OpenFile   ",
+    "OpenFile",
     "OpenFileAck",
-    "WriteBlock ",
+    "WriteBlock",
     "CommitPrepare",
     "ResendBlock",
     "CommitReady",
-    "Commit     ",
+    "Commit",
     "CommitSuccess",
-    "Abort      ",
-    "Close      ",
+    "Abort",
+    "Close",
 };

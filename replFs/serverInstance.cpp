@@ -68,10 +68,22 @@ void ServerInstance::handleWrite(PacketBase &pb)
         if(p.fileID != curFd) {
             throw FSException("Unknown file descriptor");
         }
+        /* Clean up extra blocks due to missed abort */
+        mapit mit=blocks.begin();
+        while(mit!=blocks.end()){
+            if(p.blockIDs.count(mit->first)==0){
+                mapit toErase=mit;
+                ++mit;
+                blocks.erase(toErase);
+            }else{
+                ++mit;
+            }
+        }
+        /* Find missing blocks */
         PacketResendBlock prb;
         for(blockIDit it = p.blockIDs.begin(); it != p.blockIDs.end(); ++it) {
             if(blocks.find(*it) == blocks.end()) {
-                prb.blockIDs.push_back(*it);
+                prb.blockIDs.insert(*it);
             }
         }
         if(prb.blockIDs.size() > 0) {
@@ -103,7 +115,7 @@ void ServerInstance::handleWrite(PacketBase &pb)
 void ServerInstance::handleCommitReady(PacketBase &pb)
 {
     if(pb.opCode == OPCODE_COMMIT) {
-        /* Flush blocks to disk */
+        /* Flush blocks to disk (sort by client order) */
         for(mapit it = blocks.begin(); it != blocks.end(); ++it) {
             PacketWriteBlock &blk = it->second;
             if(newFile) {

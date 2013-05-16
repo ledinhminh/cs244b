@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
-#include <vector>
+#include <set>
 
 #include "debug.h"
 #include "fs.h"
@@ -76,7 +76,7 @@ public:
 
     static const char* opCodeStr[];
 
-    virtual void serialize(std::ostream &sink) {
+    virtual void serialize(std::ostream &sink) const{
         PacketBase p(*this);
         p.id = htonl(id);
         p.seqNum = htonl(seqNum);
@@ -126,9 +126,9 @@ public:
     }
     char filename[MAX_FILENAME_SIZE];
 
-    virtual void serialize(std::ostream &sink) {
+    virtual void serialize(std::ostream &sink) const{
         PacketBase::serialize(sink);
-        sink.write(reinterpret_cast<char *>(&filename), sizeof(filename));
+        sink.write(reinterpret_cast<const char *>(&filename), sizeof(filename));
     }
     virtual void deserialize(std::istream &source) {
         PacketBase::deserialize(source);
@@ -145,9 +145,9 @@ public:
     }
     uint8_t status;
 
-    virtual void serialize(std::ostream &sink) {
+    virtual void serialize(std::ostream &sink) const{
         PacketBase::serialize(sink);
-        sink.write(reinterpret_cast<char *>(&status), sizeof(uint8_t));
+        sink.write(reinterpret_cast<const char *>(&status), sizeof(uint8_t));
     }
 
     virtual void deserialize(std::istream &source) {
@@ -187,7 +187,7 @@ public:
     uint32_t size;
     std::stringstream payload;
 
-    virtual void serialize(std::ostream &sink) {
+    virtual void serialize(std::ostream &sink) const{
         PacketBase::serialize(sink);
         PacketWriteBlock p(*this);
         p.blockID = htonl(blockID);
@@ -228,15 +228,15 @@ public:
     }
 
     uint32_t numBlocks;
-    std::vector<uint32_t> blockIDs;
+    std::set<uint32_t> blockIDs;
 
-    virtual void serialize(std::ostream &sink) {
+    virtual void serialize(std::ostream &sink) const{
         PacketBase::serialize(sink);
         PacketCommitPrepare p(*this);
         p.numBlocks = htonl(blockIDs.size());
         assert(blockIDs.size() <= MAX_NUM_BLOCKS);
-        sink.write(reinterpret_cast<char *>(&p.numBlocks), sizeof(uint32_t));
-        std::vector<uint32_t>::iterator it;
+        sink.write(reinterpret_cast<const char *>(&p.numBlocks), sizeof(uint32_t));
+        std::set<uint32_t>::const_iterator it;
         for(it = blockIDs.begin(); it != blockIDs.end(); ++it) {
             uint32_t bid = htonl(*it);
             sink.write(reinterpret_cast<char *>(&bid), sizeof(uint32_t));
@@ -251,7 +251,7 @@ public:
         for(unsigned int i = 0; i < numBlocks; i++) {
             uint32_t bid;
             source.read(reinterpret_cast<char *>(&bid),  sizeof(uint32_t));
-            blockIDs.push_back(ntohl(bid));
+            blockIDs.insert(ntohl(bid));
         }
     }
 };
