@@ -7,13 +7,16 @@ void NetworkInstance::send(PacketBase &p)
     std::stringstream sink;
     p.serialize(sink);
     if(isDropped()) {
-        PRINT("Packet dropped\n");
+        PRINT("Packet dropped\t");
         p.print();
+        PRINT("\n");
         return;
     }
-    PRINT("Send >> \t");
-    p.print();
-    PRINT("\n");
+    if(p.opCode != OPCODE_WRITEBLOCK) {
+        PRINT("[%s]Send >> ", hostname);
+        p.print();
+        PRINT("\n");
+    }
     for(unsigned int i = 0; i < sink.str().length(); i++) {
         //PRINT("%02hhX", sink.str()[i]);
     }
@@ -50,17 +53,20 @@ int NetworkInstance::recv(PacketBase &p)
         }
         p.deserialize(source);
         if(isDropped()) {
-            PRINT("Packet dropped\n");
-            p.print();
+            if(p.id != id) {
+                PRINT("\t\t");
+                p.print();
+                PRINT(" -- Dropped\n");
+            }
             return 0;
         }
         if(p.seqNum <= seqMap[p.id]) {
             p.print();
             PRINT("Reorder detected. Discard. Saved=%d; Packet=%d ID=%08X\n",
-                    seqMap[p.id], p.seqNum, p.id);
+                  seqMap[p.id], p.seqNum, p.id);
             return 0;
         } else {
-            if(p.type == TYPE_SERVER) {
+            if(p.id != id && p.opCode != OPCODE_WRITEBLOCK) {
                 PRINT("\t\t");
                 p.print();
                 PRINT(" >> Recv\n");

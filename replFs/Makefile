@@ -41,7 +41,8 @@ clean:
 
 
 s:
-	./replFsServer -port 40010 -mount dir -drop 0
+	-rm -r dir
+	./replFsServer -port 40010 -mount dir -drop 20
 
 c:
 	./appl

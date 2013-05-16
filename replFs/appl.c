@@ -8,42 +8,53 @@
 #define DEBUG
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <string>
 
 #include <client.h>
 #include <appl.h>
 
 static void applme0();
-static void appl8();
+static int appl8();
 
 static int openFile(char *file)
 {
     int fd = OpenFile(file);
-    if (fd < 0) printf("OpenFile(%s): failed (%d)\n", file, fd);
+    if (fd < 0) {
+        printf("OpenFile(%s): failed (%d)\n", file, fd);
+        exit(-1);
+    }
     return fd;
 }
 
 static int commit(int fd)
 {
     int result = Commit(fd);
-    if (result < 0) printf("Commit(%d): failed (%d)\n", fd, result);
+    if (result < 0) {
+        printf("Commit(%d): failed (%d)\n", fd, result);
+        exit(-1);
+    }
     return fd;
 }
 
 static int closeFile(int fd)
 {
     int result = CloseFile(fd);
-    if (result < 0) printf("CloseFile(%d): failed (%d)\n", fd, result);
+    if (result < 0) {
+        printf("CloseFile(%d): failed (%d)\n", fd, result);
+        exit(-1);
+    }
     return fd;
 }
 
 int main()
 {
-    if( InitReplFs( FS_PORT, 0, 1 ) < 0 ) {
+    if( InitReplFs( FS_PORT, 20, 5 ) < 0 ) {
         fprintf( stderr, "Error initializing the system\n" );
         return( ErrorExit );
     }
-    //applme0();
+    applme0();
     appl8();
     return( NormalExit );
 }
@@ -74,13 +85,13 @@ static void applme0()
 
 }
 
-static void appl8()
+static int appl8()
 {
     int fd;
     int retVal;
     int i;
     char commitStrBuf[512];
-    char *filename = "file8";
+    char *filename = (char *)"file8";
     for( i = 0; i < 512; i++ )
         commitStrBuf[i] = '1';
 
@@ -89,14 +100,11 @@ static void appl8()
     // write first transaction starting at offset 512
     for (i = 0; i < 50; i++) {
         retVal = WriteBlock( fd, commitStrBuf, 512 + i * 512 , 512 );
-        if(retVal < 0) {
-            printf( "Error writing to file\n");
-        }
     }
 
     retVal = commit( fd );
     retVal = closeFile( fd );
-    /*
+
     for( i = 0; i < 512; i++ )
         commitStrBuf[i] = '2';
 
@@ -120,7 +128,7 @@ static void appl8()
 
     retVal = commit( fd );
     retVal = closeFile( fd );
-    */
+    return retVal;
 }
 
 /* ------------------------------------------------------------------ */

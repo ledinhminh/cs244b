@@ -12,25 +12,26 @@ int ClientInstance::openFile(char *strFileName)
     N->send(p);
     setCurrentTime(&timeOpenFile);
     setCurrentTime(&timeOpenFileRetry);
+    std::set<uint32_t> servers;
 
     /* Wait for response */
     while(!isTimeout(timeOpenFile, OPENFILE_TIMEOUT)) {
         PacketBase pb;
-        if(N->recv(pb) < 0) {
-            continue;
-        }
-        /* Only handle OpenFileAck */
-        if(pb.opCode == OPCODE_OPENFILEACK) {
-            PacketOpenFile pof;
-            pof.deserialize(pb.buf);
-            servers.insert(pof.id);
-            if(servers.size() >= numServers) {
-                fileOpened = true;
-                return curFd;
+        if(N->recv(pb) > 0) {
+            /* Only handle OpenFileAck */
+            if(pb.opCode == OPCODE_OPENFILEACK) {
+                PacketOpenFile pof;
+                pof.deserialize(pb.buf);
+                servers.insert(pof.id);
+                if(servers.size() >= numServers) {
+                    fileOpened = true;
+                    return curFd;
+                }
             }
         }
         /* Retry if no response */
         if(isTimeout(timeOpenFileRetry, OPENFILE_RETRY_TIMEOUT)) {
+            PRINT("***Resending OpenFile\n");
             N->send(p);
             setCurrentTime(&timeOpenFileRetry);
         }
@@ -85,36 +86,37 @@ int ClientInstance::commit(int fd)
 
         while(true) {
             PacketBase pb;
-            if(N->recv(pb) < 0) {
-                continue;
-            }
-            if(pb.opCode == OPCODE_COMMITREADY) {
-                PacketCommitReady pcr;
-                pcr.deserialize(pb.buf);
-                readyServers.insert(pcr.id);
-                if(readyServers.size() >= numServers) {
-                    return commitFinal();
-                }
-            } else if(pb.opCode == OPCODE_RESENDBLOCK) {
-                /* + Resend blocks
-                 * + Reset timer
-                 * + Reset readyServers
-                 * + Resend CommitPrepare */
-                setCurrentTime(&timeCommitPrepare);
-                readyServers.clear();
-                PacketResendBlock prb;
-                prb.deserialize(pb.buf);
-                for(blockIDit it = prb.blockIDs.begin(); it != prb.blockIDs.end(); ++it) {
-                    mapit blk = blocks.find(*it);
-                    if(blk == blocks.end()) {
-                        throw FSException("Unknown blocks to resend");
+            if(N->recv(pb) > 0) {
+                if(pb.opCode == OPCODE_COMMITREADY) {
+                    PacketCommitReady pcr;
+                    pcr.deserialize(pb.buf);
+                    readyServers.insert(pcr.id);
+                    if(readyServers.size() >= numServers) {
+                        return commitFinal();
                     }
-                    N->send(blk->second);
+                } else if(pb.opCode == OPCODE_RESENDBLOCK) {
+                    /* + Resend blocks
+                     * + Reset timer
+                     * + Reset readyServers
+                     * + Resend CommitPrepare */
+                    setCurrentTime(&timeCommitPrepare);
+                    readyServers.clear();
+                    PacketResendBlock prb;
+                    prb.deserialize(pb.buf);
+                    blockIDit it = prb.blockIDs.begin();
+                    for(; it != prb.blockIDs.end(); ++it) {
+                        mapit blk = blocks.find(*it);
+                        if(blk == blocks.end()) {
+                            throw FSException("Unknown blocks to resend");
+                        }
+                        N->send(blk->second);
+                    }
+                    break; //Restart CommitPrepare
                 }
-                break; //Restart CommitPrepare
             }
             /* Retry CommitPrepare but keep response */
             if(isTimeout(timeCommitPrepareRetry, COMMITPREPARE_RETRY_TIMEOUT)) {
+            PRINT("***Resending CommitPrepare\n");
                 N->send(p);
                 setCurrentTime(&timeCommitPrepareRetry);
             }
@@ -137,21 +139,21 @@ int ClientInstance::commitFinal()
     std::set<uint32_t> successServers;
     while(!isTimeout(timeCommit, COMMIT_TIMEOUT)) {
         PacketBase pb;
-        if(N->recv(pb) < 0) {
-            continue;
-        }
-        if(pb.opCode == OPCODE_COMMITSUCCESS) {
-            PacketCommitSuccess pcs;
-            pcs.deserialize(pb.buf);
-            successServers.insert(pcs.id);
-            if(successServers.size() >= numServers) {
-                /* Clear block cache upon commit */
-                blocks.clear();
-                return 0;
+        if(N->recv(pb) > 0) {
+            if(pb.opCode == OPCODE_COMMITSUCCESS) {
+                PacketCommitSuccess pcs;
+                pcs.deserialize(pb.buf);
+                successServers.insert(pcs.id);
+                if(successServers.size() >= numServers) {
+                    /* Clear block cache upon commit */
+                    blocks.clear();
+                    return 0;
+                }
             }
         }
         /* Retry Commit */
         if(isTimeout(timeCommitRetry, COMMIT_RETRY_TIMEOUT)) {
+            PRINT("***Resending Commit\n");
             N->send(p);
             setCurrentTime(&timeCommitRetry);
         }
@@ -180,12 +182,37 @@ int ClientInstance::closeFile(int fd)
     if(pendingCommit) {
         commit(fd);
     }
-    fileOpened = false;
     PacketClose p;
     p.fileID = curFd;
     N->send(p);
     blocks.clear();
-    return 0;
+
+    setCurrentTime(&timeClose);
+    setCurrentTime(&timeCloseRetry);
+    std::set<uint32_t> servers;
+
+    /* Wait for response */
+    while(!isTimeout(timeClose, CLOSE_TIMEOUT)) {
+        PacketBase pb;
+        if(N->recv(pb) > 0) {
+            /* Only handle OpenFileAck */
+            if(pb.opCode == OPCODE_CLOSEACK) {
+                PacketCloseAck pca;
+                pca.deserialize(pb.buf);
+                servers.insert(pca.id);
+                if(servers.size() >= numServers) {
+                    fileOpened = false;
+                    return 0;
+                }
+            }
+        }
+        /* Retry if no response */
+        if(isTimeout(timeCloseRetry, CLOSE_RETRY_TIMEOUT)) {
+            N->send(p);
+            setCurrentTime(&timeCloseRetry);
+        }
+    }
+    return -1;
 }
 
 /* ----------------- Private ----------------------- */

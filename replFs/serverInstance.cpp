@@ -10,9 +10,6 @@ void ServerInstance::run()
         if(pb.type == TYPE_SERVER) {
             continue;
         }
-        PRINT("\t\t");
-        pb.print();
-        PRINT(" >> Recv\n");
         switch(state) {
         case Idle:
             handleIdle(pb);
@@ -27,6 +24,12 @@ void ServerInstance::run()
             throw FSException("Unknown server state");
         }
     }
+}
+
+void ServerInstance::transit(enum serverState next)
+{
+    lastState = state;
+    state = next;
 }
 
 void ServerInstance::handleIdle(PacketBase &pb)
@@ -48,14 +51,30 @@ void ServerInstance::handleIdle(PacketBase &pb)
         }
         PRINT("Opening file: %s\n", filepath.c_str());
         pr.status = FILEOPENACK_OK;
-        state = Write;
+        transit(Write);
         N->send(pr);
+    } else if(pb.opCode == OPCODE_CLOSE) {
+        /* Missed Close request */
+        PacketClose p;
+        p.deserialize(pb.buf);
+        if(p.fileID == closedFd) {
+            PacketCloseAck pca;
+            pca.fileID = closedFd;
+            N->send(pca);
+        }
     }
 }
 
 void ServerInstance::handleWrite(PacketBase &pb)
 {
-    if(pb.opCode == OPCODE_WRITEBLOCK) {
+    if(pb.opCode == OPCODE_OPENFILE) {
+        if(pb.fileID == curFd && lastState == Idle) {
+            PacketOpenFileAck pr;
+            pr.fileID = curFd;
+            pr.status = FILEOPENACK_OK;
+            N->send(pr);
+        }
+    } else if(pb.opCode == OPCODE_WRITEBLOCK) {
         PacketWriteBlock p;
         p.deserialize(pb.buf);
         if(p.fileID != curFd) {
@@ -69,13 +88,13 @@ void ServerInstance::handleWrite(PacketBase &pb)
             throw FSException("Unknown file descriptor");
         }
         /* Clean up extra blocks due to missed abort */
-        mapit mit=blocks.begin();
-        while(mit!=blocks.end()){
-            if(p.blockIDs.count(mit->first)==0){
-                mapit toErase=mit;
+        mapit mit = blocks.begin();
+        while(mit != blocks.end()) {
+            if(p.blockIDs.count(mit->first) == 0) {
+                mapit toErase = mit;
                 ++mit;
                 blocks.erase(toErase);
-            }else{
+            } else {
                 ++mit;
             }
         }
@@ -90,14 +109,14 @@ void ServerInstance::handleWrite(PacketBase &pb)
             /* Missing blocks; ask for resend */
             prb.fileID = curFd;
             N->send(prb);
-            PRINT("Missing %lu blocks\n", prb.blockIDs.size());
+            PRINT("[%s] Missing %lu blocks\n", N->hostname, prb.blockIDs.size());
         } else {
             /* I'm ready */
             PacketCommitReady pcr;
             pcr.fileID = curFd;
             N->send(pcr);
-            state = CommitReady;
-            PRINT("Ready to commit\n");
+            transit(CommitReady);
+            PRINT("[%s] Ready to commit\n", N->hostname);
         }
     } else if(pb.opCode == OPCODE_ABORT) {
         PRINT("FileID[%d] %lu writes aborted!\n", curFd, blocks.size());
@@ -107,8 +126,18 @@ void ServerInstance::handleWrite(PacketBase &pb)
         blocks.clear();
         if(curFile) fclose(curFile);
         curFile = NULL;
-        state = Idle;
+        transit(Idle);
+        PacketCloseAck pca;
+        pca.fileID = closedFd = curFd;
+        N->send(pca);
         PRINT("FileID[%d] closed.\n", curFd);
+    } else if(pb.opCode == OPCODE_COMMIT) {
+        if(lastState == CommitReady) {
+            PRINT("[%s] Re-ack commitSuccess\n", N->hostname);
+            PacketCommitSuccess pcs;
+            pcs.fileID = curFd;
+            N->send(pcs);
+        }
     }
 }
 
@@ -116,6 +145,7 @@ void ServerInstance::handleCommitReady(PacketBase &pb)
 {
     if(pb.opCode == OPCODE_COMMIT) {
         /* Flush blocks to disk (sort by client order) */
+        PRINT("[%s] FileID[%d] flushing writes...\n", N->hostname, curFd);
         for(mapit it = blocks.begin(); it != blocks.end(); ++it) {
             PacketWriteBlock &blk = it->second;
             if(newFile) {
@@ -129,13 +159,14 @@ void ServerInstance::handleCommitReady(PacketBase &pb)
             fwrite(blk.payload.str().c_str(), 1, blk.size, curFile);
             fflush(curFile);
         }
-        PRINT("FileID[%d] %lu writes committed!\n", curFd, blocks.size());
+        PRINT("[%s] FileID[%d] %lu writes committed!\n", 
+                N->hostname, curFd, blocks.size());
         PacketCommitSuccess pcs;
         pcs.fileID = curFd;
         N->send(pcs);
         /* Clear block cache and wait for more writes */
         blocks.clear();
-        state = Write;
+        transit(Write);
     } else if(pb.opCode == OPCODE_WRITEBLOCK) {
         /* Mostly like other servers' resend response */
         PacketWriteBlock p;
@@ -144,13 +175,21 @@ void ServerInstance::handleCommitReady(PacketBase &pb)
             throw FSException("Unknown file descriptor");
         }
         blocks[p.blockID] = p;
-        state = Write;
+        //transit(Write);
+    } else if(pb.opCode == OPCODE_COMMITPREPARE) {
+        PacketCommitReady pcr;
+        pcr.fileID = curFd;
+        N->send(pcr);
+        PRINT("Ready to commit\n");
     } else if(pb.opCode == OPCODE_CLOSE) {
         /* Close file; Clear block cache; Go to Idle */
         blocks.clear();
         if(curFile) fclose(curFile);
         curFile = NULL;
-        state = Idle;
+        transit(Idle);
+        PacketCloseAck pca;
+        pca.fileID = closedFd = curFd;
+        N->send(pca);
         PRINT("FileID[%d] closed.\n", curFd);
     }
 }

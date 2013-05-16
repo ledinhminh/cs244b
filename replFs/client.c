@@ -54,7 +54,7 @@ OpenFile( char *fileName )
 int
 WriteBlock( int fd, char *buffer, int byteOffset, int blockSize )
 {
-#ifdef DEBUG
+#ifndef DEBUG
     printf( "WriteBlock: Writing FD=%d, Offset=%d, Length=%d\n",
             fd, byteOffset, blockSize );
 #endif

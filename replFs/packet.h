@@ -23,7 +23,7 @@
 #define OPCODE_COMMITSUCCESS   0x7
 #define OPCODE_ABORT        0x8
 #define OPCODE_CLOSE        0x9
-#define OPCODE_CLOSEACK     0x10
+#define OPCODE_CLOSEACK     0xA
 
 #define TYPE_CLIENT 0
 #define TYPE_SERVER 1
@@ -112,7 +112,7 @@ public:
     }
 
     void print() {
-        PRINT("[%13s] - Type[%d]|ID[%X]|seqNum[%d]|fileID[%d]",
+        PRINT("[%13s] - Type[%d]|ID[%08X]|seqNum[%03d]|fileID[%02d]",
                opCodeStr[opCode], type, id, seqNum, fileID);
     }
 

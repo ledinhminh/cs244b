@@ -11,4 +11,5 @@ const char *PacketBase::opCodeStr[] = {
     "CommitSuccess",
     "Abort",
     "Close",
+    "CloseAck",
 };

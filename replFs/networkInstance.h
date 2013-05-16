@@ -4,6 +4,7 @@
 #include "strings.h"
 #include "stdlib.h"
 #include "string.h"
+#include "unistd.h"
 #include <errno.h>
 #include <netdb.h>
 #include <fcntl.h>
@@ -37,6 +38,8 @@ private:
     std::map<uint32_t, uint32_t> seqMap;
 
 public:
+    char hostname[16];
+
     NetworkInstance(unsigned short _port, unsigned int _group,
                     int _droprate, bool isBlocking) :
         port(_port), group(_group), droprate(_droprate) {
@@ -51,6 +54,8 @@ public:
         } else {
             pollTimeout = POLL_INTERVAL;
         }
+        gethostname(hostname, sizeof(hostname));
+        hostname[sizeof(hostname)-1]='\0';
     };
     void send(PacketBase &p);
     int recv(PacketBase &p);
