@@ -23,6 +23,7 @@
 #define OPCODE_COMMITSUCCESS   0x7
 #define OPCODE_ABORT        0x8
 #define OPCODE_CLOSE        0x9
+#define OPCODE_CLOSEACK     0x10
 
 #define TYPE_CLIENT 0
 #define TYPE_SERVER 1
@@ -304,4 +305,13 @@ public:
         type = TYPE_CLIENT;
     }
 };
+
+class PacketCloseAck: public PacketBase {
+public:
+    PacketCloseAck() {
+        opCode = OPCODE_CLOSEACK;
+        type = TYPE_SERVER;
+    }
+};
+
 #endif
