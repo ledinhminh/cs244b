@@ -2,7 +2,7 @@
 
 int ClientInstance::openFile(char *strFileName)
 {
-    if(fileOpened || strlen(strFileName) >= MAX_FILENAME_SIZE) {
+    if(fileOpened || strFileName == NULL || strlen(strFileName) >= MAX_FILENAME_SIZE) {
         return -1;
     }
     /* Send request */
