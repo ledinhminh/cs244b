@@ -20,3 +20,7 @@ clean:
 run:
 	rm result
 	./runtest --port 40010 --rundir .. --servers 2 2>&1 | tee result
+
+rundrop:
+	rm result
+	./runtest -d 10 --port 40010 --rundir .. --servers 2 2>&1 | tee result
