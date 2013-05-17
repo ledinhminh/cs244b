@@ -8,7 +8,7 @@ So Close can be implemented as a wrapper for Commit().
 Later on, I realized my assumption were not true. 
 Therefore Close() and CloseAck() are needed.
 
-+ Changed timeout from 1 sec to 4 sec
++ Changed timeout from 1 sec to 8 sec
 
 Reason: With 5 servers and 20% droprate, the 1 second timeout
 seems a bit tight. 
