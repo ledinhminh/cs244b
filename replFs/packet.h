@@ -28,7 +28,7 @@
 #define TYPE_CLIENT 0
 #define TYPE_SERVER 1
 
-#define PROTOCOL_VERSION 1
+#define PROTOCOL_VERSION 0
 
 #define FILEOPENACK_OK      0
 #define FILEOPENACK_FAIL    -1
