@@ -52,12 +52,12 @@ static int closeFile(int fd)
 
 int main()
 {
-    if( InitReplFs( FS_PORT, 20, 5 ) < 0 ) {
+    if( InitReplFs( FS_PORT, 25, 2) < 0 ) {
         fprintf( stderr, "Error initializing the system\n" );
         return( ErrorExit );
     }
-    applme0();
-    appl8();
+    if(0) applme0();
+    if(1) appl8();
     return( NormalExit );
 }
 

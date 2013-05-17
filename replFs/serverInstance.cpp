@@ -157,7 +157,9 @@ void ServerInstance::handleCommitReady(PacketBase &pb)
             }
             fseek(curFile, blk.offset, SEEK_SET);
             fwrite(blk.payload.str().c_str(), 1, blk.size, curFile);
-            fflush(curFile);
+            if(fflush(curFile)<0){
+                PRINT("Error flushing writes: %s\n", strerror(errno));
+            }
         }
         PRINT("[%s] FileID[%d] %lu writes committed!\n", 
                 N->hostname, curFd, blocks.size());
