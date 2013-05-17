@@ -303,9 +303,73 @@ and retries every 200ms.
 This operation fails after 4 second, if it does not get responses from all servers.
 
 \section{Evaluation}
-Discuss the merits and disadvantages of this approach to replication versus using conventional reliable transport.
+Discuss the merits and disadvantages of this approach to replication 
+versus using conventional reliable transport.
+
+\subsection{Advantage}
+\begin{itemize}
+\item This approach is transactional. 
+    There is no need to force consistency until commit.
+    If we were to use conventional replication, every write must be Acked from server.
+    If some writes were later aborted, those bandwidth were wasted.
+    ith this approach, only the real writes are sync'ed during commit.
+
+\item Since writes are not acked, the client can still proceed if some servers
+    are down for a while, as long as they come back before commit. 
+    If we were using conventional transport, the client will be blocked even when
+    one server is down or slow. This makes the whole write process unpredictable.
+    This approach shifts the unpredictibilty all to the commit phase.
+
+\item This approach scales well in a LAN where UDP multicast is applicable.
+    When a new server is added, the client still only sends one message for each action.
+    During commit, if any server asks for blocks to be resent, with multicast
+    any server can benefit from the resend. 
+\end{itemize}
+
+\subsection{Disadvantage}
+\begin{itemize}
+\item This protocol is blocking. When the server is in the commitPrepare stage and
+    the client crashes, the server will block until the client recovers.
+
+\item Uncommited writes are easily lost. If the client does a lot of writes 
+    and crashes before commit. Those writes are all lost. If the client tries
+    to mitigate the problem by committing as often as possible, this would create
+    a lot of commit overhead traffic.
+
+\item Putting all the writes to commit could also be wasteful if commit fails.
+    The client might have done much computation during writes. 
+    When it tries to commit and it fails(eg disk full on server), 
+    all the work done on the client side is wasted.
+    With conventional transport where each write is sync'ed, the problem can
+    be discovered early.
+\end{itemize}
 
 \section{Future Directions}
-Discuss extensions, refinements, and modifications to your protocol and implementation that would be required for real deployment. An answer to this discussion necessarily includes consideration of large scale systems and files.
+Discuss extensions, refinements, and modifications to your protocol and 
+implementation that would be required for real deployment. 
+An answer to this discussion necessarily includes consideration of large scale systems and files.
 
+\begin{itemize}
+\item The current implementation only allows the client resend blocks,
+    when some blocks are missing during commit. 
+    Future implementation can allow servers to talk to servers directly.
+    Iif a server has a block another server needs, 
+    there is no need for the client to send.
+    This is especially beneficial, when servers are located near each other
+    and the client is remote. 
+    This is also beneficial when the file under operation is large, because
+    RTT between client and a server is usually higher and the bandwidth is 
+    usually lower.
+
+\item Support ReadBlock(). As a real file system, write-only is not interesting.
+    When the client asks for a block, only one of the server needs to send the result.
+    When there are multiple read-only client, this can be load balanced among
+    the server, and improve availability.
+
+\item The current implementation has the assumption that all servers must respond
+    before the client can proceed. This will be a problem when the system scales up
+    and the likelihood of a server is down is high. We can use the quorum-style 
+    commit where only a portion of the server is needed for the client to proceed.
+    This improves availability.
+\end{itemize}
 \end{document}

@@ -1,11 +1,15 @@
 ChangeLog
 ============
 
-+ Added CloseAck Packet and its timeout
-Reason: I previously thought Close had the same return semantics as Abort().
-Since Abort() cannot fail when server is down, I did not include Acks
-for Close() as well.
++ Added Close/CloseAck Packet
+
+Reason: I previously thought only one file is allowed for the whole session.
+So Close can be implemented as a wrapper for Commit().
+Later on, I realized my assumption were not true. 
+Therefore Close() and CloseAck() are needed.
 
 + Changed timeout from 1 sec to 4 sec
-Reason: After testing with 5 servers and 20% droprate, the 1 second timeout
-seems a bit tight. Increasing it to 4 sec improves stability.
+
+Reason: With 5 servers and 20% droprate, the 1 second timeout
+seems a bit tight. 
+Increasing it to 4 sec improves success rate for the interface.
