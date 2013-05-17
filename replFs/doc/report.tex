@@ -219,6 +219,16 @@ The client sends abort packet to all servers to discard the uncommited changes.
 \end{figure}
 The client sends close packet to all servers to close the file.
 
+\subsection{CloseAck}
+\begin{figure}[H]
+\centering
+	\begin{bytefield}{32}
+        \packetHeader{0x0A}
+	\end{bytefield}
+	\caption{CloseAck Packet}
+\end{figure}
+The server sends CloseAck packet to the client to confirm file closure.
+
 \section{Protocol Details}
 
 \subsection{Node ID generation}
@@ -287,10 +297,15 @@ and retries every 200ms.
 This operation fails after 4 second, if it does not get responses from all servers.
 This will cause the commit() call to fail.
 
-\subsubsection{Commit}
+\subsubsection{Close}
 When the client sends Close packet, it waits for the CloseAck from servers
 and retries every 200ms.
 This operation fails after 4 second, if it does not get responses from all servers.
 
+\section{Evaluation}
+Discuss the merits and disadvantages of this approach to replication versus using conventional reliable transport.
+
+\section{Future Directions}
+Discuss extensions, refinements, and modifications to your protocol and implementation that would be required for real deployment. An answer to this discussion necessarily includes consideration of large scale systems and files.
 
 \end{document}
