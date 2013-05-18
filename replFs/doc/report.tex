@@ -283,24 +283,24 @@ which introduces inconsistency during packet loss.
 When the client sends OpenFile packet, it waits for the OpenFileAck from servers 
 and retries every 200ms.
 It fails immediately, if one OpenFileAck has a failure status. 
-It fails after 8 second, if it does not get responses from all servers.
+It fails after 6 second, if it does not get responses from all servers.
 
 \subsubsection{CommitPrepare}
 When the client sends CommitPrepare packet, it waits for the CommitReady 
 or ResendBlock from servers and retries every 200ms.
-This operation fails after 8 second, if it does not get responses from all servers.
+This operation fails after 6 second, if it does not get responses from all servers.
 This will cause the commit() call to fail.
 
 \subsubsection{Commit}
 When the client sends Commit packet, it waits for the CommitSuccess from servers
 and retries every 200ms.
-This operation fails after 8 second, if it does not get responses from all servers.
+This operation fails after 6 second, if it does not get responses from all servers.
 This will cause the commit() call to fail.
 
 \subsubsection{Close}
 When the client sends Close packet, it waits for the CloseAck from servers
 and retries every 200ms.
-This operation fails after 8 second, if it does not get responses from all servers.
+This operation fails after 6 second, if it does not get responses from all servers.
 
 \section{Evaluation}
 Discuss the merits and disadvantages of this approach to replication 
